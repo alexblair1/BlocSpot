@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FA924CC11B45BCCC003EE11E"
+               BlueprintIdentifier = "FA924D001B45D3A1003EE11E"
                BuildableName = "BlocSpot.app"
                BlueprintName = "BlocSpot"
                ReferencedContainer = "container:BlocSpot.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FA924CDA1B45BCCC003EE11E"
+               BlueprintIdentifier = "FA924D191B45D3A1003EE11E"
                BuildableName = "BlocSpotTests.xctest"
                BlueprintName = "BlocSpotTests"
                ReferencedContainer = "container:BlocSpot.xcodeproj">
@@ -46,7 +46,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FA924CDA1B45BCCC003EE11E"
+               BlueprintIdentifier = "FA924D191B45D3A1003EE11E"
                BuildableName = "BlocSpotTests.xctest"
                BlueprintName = "BlocSpotTests"
                ReferencedContainer = "container:BlocSpot.xcodeproj">
@@ -56,7 +56,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FA924CC11B45BCCC003EE11E"
+            BlueprintIdentifier = "FA924D001B45D3A1003EE11E"
             BuildableName = "BlocSpot.app"
             BlueprintName = "BlocSpot"
             ReferencedContainer = "container:BlocSpot.xcodeproj">
@@ -76,7 +76,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FA924CC11B45BCCC003EE11E"
+            BlueprintIdentifier = "FA924D001B45D3A1003EE11E"
             BuildableName = "BlocSpot.app"
             BlueprintName = "BlocSpot"
             ReferencedContainer = "container:BlocSpot.xcodeproj">
@@ -95,7 +95,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FA924CC11B45BCCC003EE11E"
+            BlueprintIdentifier = "FA924D001B45D3A1003EE11E"
             BuildableName = "BlocSpot.app"
             BlueprintName = "BlocSpot"
             ReferencedContainer = "container:BlocSpot.xcodeproj">
