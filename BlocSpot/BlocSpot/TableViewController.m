@@ -7,24 +7,38 @@
 //
 
 #import "TableViewController.h"
-#import <UIKit/UIKit.h>
+#import "MapViewController.h"
+#import "DataSource.h"
+#import "CategoryViewController.h"
 
-@interface TableViewController ()<UISearchBarDelegate>
-@property (nonatomic, strong) NSString *titleString;
-@property (nonatomic, strong) UISearchController *searchController;
+@interface TableViewController ()
+
+@property (nonatomic, strong) UIBarButtonItem *categoryButtonItem;
+@property (nonatomic, strong) UIPopoverController *buttonPopOverController;
+
 @end
 
 @implementation TableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.title = @"BlocSpot";
 
     self.searchBarTable = [[UISearchBar alloc] init];
     self.searchBarTable.delegate = self;
+
+    self.categoryButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Categories", @"categories button") style:UIBarButtonItemStylePlain target:self action:@selector(categoryButtonDidPress:)];
     
-    self.titleString = [[NSString alloc] init];
-    self.titleString = @"BlocSpot";
-    self.navigationItem.title = self.titleString;
+    self.navigationItem.rightBarButtonItems = [self.navigationItem.rightBarButtonItems arrayByAddingObject:self.categoryButtonItem];
+    
+    self.poiArray = [[NSMutableArray alloc] init];
+    
+    NSDictionary *obj1 = [[NSDictionary alloc] initWithObjectsAndKeys:@"some title", @"title", @"some subtitle", @"detail", nil];
+    NSDictionary *obj2 = [[NSDictionary alloc] initWithObjectsAndKeys:@"some title 2", @"title", @"some subtitle 2", @"detail", nil];
+    
+    [self.poiArray addObject:obj1];
+    [self.poiArray addObject:obj2];
 
     
 //     Uncomment the following line to preserve selection between presentations.
@@ -34,8 +48,11 @@
 //     self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-- (IBAction)searchButtonTable:(id)sender{
-    
+-(void) categoryButtonDidPress:(UIBarButtonItem *)sender {
+    [self performSegueWithIdentifier:@"categorySegueTable" sender:nil];
+}
+
+- (IBAction)searchButtonPressed:(id)sender {
     self.navigationItem.titleView = self.searchBarTable;
     
     self.searchBarTable.showsCancelButton = NO;
@@ -56,10 +73,9 @@
 
 #pragma mark - Table view data source
 
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return self.poiArray.count;
+    return [self.poiArray count];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -68,15 +84,23 @@
 }
 
 
-/*
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    static NSString *CellIdentifier = @"Cell";
     
-    // Configure the cell...
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+    
+    cell.textLabel.text = [[self.poiArray objectAtIndex:indexPath.row] objectForKey:@"title"];
+    cell.detailTextLabel.text = [[self.poiArray objectAtIndex:indexPath.row] objectForKey:@"detail"];
     
     return cell;
 }
-*/
+
 
 /*
 // Override to support conditional editing of the table view.

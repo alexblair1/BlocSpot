@@ -17,7 +17,12 @@
 		FA924D2E1B45D7A4003EE11E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA924D2D1B45D7A4003EE11E /* MapKit.framework */; };
 		FA924D341B45DAB0003EE11E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA924D331B45DAB0003EE11E /* MapViewController.m */; };
 		FA924D3A1B460ADC003EE11E /* DataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = FA924D391B460ADC003EE11E /* DataSource.m */; };
-		FAE89D7C1B4775A7000D2B33 /* Search.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE89D7B1B4775A7000D2B33 /* Search.m */; };
+		FADB403D1B4C5EBF00C02DA2 /* Search.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB403C1B4C5EBF00C02DA2 /* Search.m */; };
+		FADB40401B4C5EE900C02DA2 /* Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB403F1B4C5EE900C02DA2 /* Categories.m */; };
+		FADB40431B4C5F0600C02DA2 /* Note.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB40421B4C5F0600C02DA2 /* Note.m */; };
+		FADB40461B4C5F6D00C02DA2 /* CategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB40451B4C5F6D00C02DA2 /* CategoryViewController.m */; };
+		FADB404F1B4C6B8D00C02DA2 /* Annotation.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB404E1B4C6B8D00C02DA2 /* Annotation.m */; };
+		FAE3F4271B4F06D000585FF8 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE3F4261B4F06D000585FF8 /* DetailViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,8 +54,18 @@
 		FA924D331B45DAB0003EE11E /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		FA924D381B460ADC003EE11E /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		FA924D391B460ADC003EE11E /* DataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSource.m; sourceTree = "<group>"; };
-		FAE89D7A1B4775A7000D2B33 /* Search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Search.h; sourceTree = "<group>"; };
-		FAE89D7B1B4775A7000D2B33 /* Search.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Search.m; sourceTree = "<group>"; };
+		FADB403B1B4C5EBF00C02DA2 /* Search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Search.h; sourceTree = "<group>"; };
+		FADB403C1B4C5EBF00C02DA2 /* Search.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Search.m; sourceTree = "<group>"; };
+		FADB403E1B4C5EE900C02DA2 /* Categories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Categories.h; sourceTree = "<group>"; };
+		FADB403F1B4C5EE900C02DA2 /* Categories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Categories.m; sourceTree = "<group>"; };
+		FADB40411B4C5F0600C02DA2 /* Note.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Note.h; sourceTree = "<group>"; };
+		FADB40421B4C5F0600C02DA2 /* Note.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Note.m; sourceTree = "<group>"; };
+		FADB40441B4C5F6D00C02DA2 /* CategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoryViewController.h; sourceTree = "<group>"; };
+		FADB40451B4C5F6D00C02DA2 /* CategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryViewController.m; sourceTree = "<group>"; };
+		FADB404D1B4C6B8D00C02DA2 /* Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Annotation.h; sourceTree = "<group>"; };
+		FADB404E1B4C6B8D00C02DA2 /* Annotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Annotation.m; sourceTree = "<group>"; };
+		FAE3F4251B4F06D000585FF8 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		FAE3F4261B4F06D000585FF8 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,14 +111,24 @@
 			children = (
 				FA924D081B45D3A1003EE11E /* AppDelegate.h */,
 				FA924D091B45D3A1003EE11E /* AppDelegate.m */,
+				FADB404D1B4C6B8D00C02DA2 /* Annotation.h */,
+				FADB404E1B4C6B8D00C02DA2 /* Annotation.m */,
+				FADB403E1B4C5EE900C02DA2 /* Categories.h */,
+				FADB403F1B4C5EE900C02DA2 /* Categories.m */,
+				FADB40441B4C5F6D00C02DA2 /* CategoryViewController.h */,
+				FADB40451B4C5F6D00C02DA2 /* CategoryViewController.m */,
 				FA924D381B460ADC003EE11E /* DataSource.h */,
 				FA924D391B460ADC003EE11E /* DataSource.m */,
+				FAE3F4251B4F06D000585FF8 /* DetailViewController.h */,
+				FAE3F4261B4F06D000585FF8 /* DetailViewController.m */,
 				FA924D321B45DAB0003EE11E /* MapViewController.h */,
 				FA924D331B45DAB0003EE11E /* MapViewController.m */,
+				FADB40411B4C5F0600C02DA2 /* Note.h */,
+				FADB40421B4C5F0600C02DA2 /* Note.m */,
+				FADB403B1B4C5EBF00C02DA2 /* Search.h */,
+				FADB403C1B4C5EBF00C02DA2 /* Search.m */,
 				FA924D2A1B45D4BE003EE11E /* TableViewController.h */,
 				FA924D2B1B45D4BE003EE11E /* TableViewController.m */,
-				FAE89D7A1B4775A7000D2B33 /* Search.h */,
-				FAE89D7B1B4775A7000D2B33 /* Search.m */,
 				FA924D0E1B45D3A1003EE11E /* Main.storyboard */,
 				FA924D111B45D3A1003EE11E /* Images.xcassets */,
 				FA924D131B45D3A1003EE11E /* LaunchScreen.xib */,
@@ -243,12 +268,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FADB40431B4C5F0600C02DA2 /* Note.m in Sources */,
 				FA924D0A1B45D3A1003EE11E /* AppDelegate.m in Sources */,
 				FA924D071B45D3A1003EE11E /* main.m in Sources */,
 				FA924D3A1B460ADC003EE11E /* DataSource.m in Sources */,
-				FAE89D7C1B4775A7000D2B33 /* Search.m in Sources */,
 				FA924D2C1B45D4BE003EE11E /* TableViewController.m in Sources */,
+				FADB40461B4C5F6D00C02DA2 /* CategoryViewController.m in Sources */,
+				FADB404F1B4C6B8D00C02DA2 /* Annotation.m in Sources */,
+				FADB40401B4C5EE900C02DA2 /* Categories.m in Sources */,
 				FA924D341B45DAB0003EE11E /* MapViewController.m in Sources */,
+				FADB403D1B4C5EBF00C02DA2 /* Search.m in Sources */,
+				FAE3F4271B4F06D000585FF8 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

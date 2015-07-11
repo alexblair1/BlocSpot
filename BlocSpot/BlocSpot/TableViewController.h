@@ -8,10 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TableViewController : UITableViewController
+
+@interface TableViewController : UITableViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) NSMutableArray *poiArray;
 @property (nonatomic, strong) UISearchBar *searchBarTable;
-- (IBAction)searchButtonTable:(id)sender;
+
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *mapButton;
+
+- (IBAction)searchButtonPressed:(id)sender;
 
 @end

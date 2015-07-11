@@ -8,9 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "DataSource.h"
+#import "DetailViewController.h"
 
-@interface MapViewController : UIViewController
+
+@interface MapViewController : UIViewController <UISearchBarDelegate, MKMapViewDelegate, CLLocationManagerDelegate>
+
+@property (strong, nonatomic) NSArray *poiArray;
+
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *searchButtonMap;
+
 - (IBAction)searchButtonDidPress:(id)sender;
 
 @end
