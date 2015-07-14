@@ -22,6 +22,7 @@
 		FADB40431B4C5F0600C02DA2 /* Note.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB40421B4C5F0600C02DA2 /* Note.m */; };
 		FADB40461B4C5F6D00C02DA2 /* CategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB40451B4C5F6D00C02DA2 /* CategoryViewController.m */; };
 		FADB404F1B4C6B8D00C02DA2 /* Annotation.m in Sources */ = {isa = PBXBuildFile; fileRef = FADB404E1B4C6B8D00C02DA2 /* Annotation.m */; };
+		FADEBCE81B544C1700D65F38 /* GoogleSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = FADEBCE71B544C1700D65F38 /* GoogleSearchController.m */; };
 		FAE3F4271B4F06D000585FF8 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE3F4261B4F06D000585FF8 /* DetailViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,8 @@
 		FADB40451B4C5F6D00C02DA2 /* CategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryViewController.m; sourceTree = "<group>"; };
 		FADB404D1B4C6B8D00C02DA2 /* Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Annotation.h; sourceTree = "<group>"; };
 		FADB404E1B4C6B8D00C02DA2 /* Annotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Annotation.m; sourceTree = "<group>"; };
+		FADEBCE61B544C1700D65F38 /* GoogleSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoogleSearchController.h; sourceTree = "<group>"; };
+		FADEBCE71B544C1700D65F38 /* GoogleSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoogleSearchController.m; sourceTree = "<group>"; };
 		FAE3F4251B4F06D000585FF8 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		FAE3F4261B4F06D000585FF8 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -121,6 +124,8 @@
 				FA924D391B460ADC003EE11E /* DataSource.m */,
 				FAE3F4251B4F06D000585FF8 /* DetailViewController.h */,
 				FAE3F4261B4F06D000585FF8 /* DetailViewController.m */,
+				FADEBCE61B544C1700D65F38 /* GoogleSearchController.h */,
+				FADEBCE71B544C1700D65F38 /* GoogleSearchController.m */,
 				FA924D321B45DAB0003EE11E /* MapViewController.h */,
 				FA924D331B45DAB0003EE11E /* MapViewController.m */,
 				FADB40411B4C5F0600C02DA2 /* Note.h */,
@@ -278,6 +283,7 @@
 				FADB40401B4C5EE900C02DA2 /* Categories.m in Sources */,
 				FA924D341B45DAB0003EE11E /* MapViewController.m in Sources */,
 				FADB403D1B4C5EBF00C02DA2 /* Search.m in Sources */,
+				FADEBCE81B544C1700D65F38 /* GoogleSearchController.m in Sources */,
 				FAE3F4271B4F06D000585FF8 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

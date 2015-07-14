@@ -12,7 +12,7 @@
 #import "DetailViewController.h"
 
 
-@interface MapViewController : UIViewController <UISearchBarDelegate, MKMapViewDelegate, CLLocationManagerDelegate>
+@interface MapViewController : UIViewController <UIWebViewDelegate, UISearchBarDelegate, MKMapViewDelegate, CLLocationManagerDelegate>
 
 @property (strong, nonatomic) NSArray *poiArray;
 

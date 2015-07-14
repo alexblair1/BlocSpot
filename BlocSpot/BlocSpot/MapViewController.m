@@ -9,6 +9,7 @@
 #import "MapViewController.h"
 #import "Search.h"
 #import "TableViewController.h"
+#import "GoogleSearchController.h"
 #import <CoreLocation/CoreLocation.h>
 
 @interface MapViewController ()
@@ -17,6 +18,7 @@
 @property (strong, nonatomic) IBOutlet MKMapView *mapView;
 @property (strong, nonatomic) UIBarButtonItem *categoryButton;
 @property (nonatomic, strong) NSString *storedItemNames;
+@property (nonatomic, strong) GoogleSearchController *classObj;
 
 @property (nonatomic, strong) MKPlacemark *placemark;
 
@@ -72,6 +74,8 @@
     [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
     
+    self.classObj = [[GoogleSearchController alloc] init];
+    
     self.categoryButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Categories", @"category button") style:UIBarButtonItemStylePlain target:self action:@selector(categoryButtonPressed:)];
     self.navigationItem.rightBarButtonItems = [self.navigationItem.rightBarButtonItems arrayByAddingObject:self.categoryButton];
     
@@ -110,9 +114,8 @@
             self.pointAnnotation.coordinate = items.placemark.coordinate;
             self.pointAnnotation.title = items.name;
             [self.mapView addAnnotation:self.pointAnnotation];
-            self.storedItemNames = items.name;
             
-            NSLog(@"%@", self.storedItemNames);
+            NSLog(@"%@", items.name);
         }
     }];
 }
@@ -120,34 +123,39 @@
 #pragma mark - Buttons 
 
 -(void)leftButtonAnnotationPressed:(UIButton *)sender {
-    NSString *appendString = self.pointAnnotation.title;
-    NSString *urlString = @"http://www.google.com/search?q=";
-    NSString *appendedUrlString = [urlString stringByAppendingString:appendString];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appendedUrlString]];
     
-    NSLog(@"%@", appendedUrlString);
+    [self performSegueWithIdentifier:@"googleSearch" sender:nil];
+    
+    MKPointAnnotation *annotation = [self.mapView.selectedAnnotations objectAtIndex:([self.mapView.selectedAnnotations count]) -1];
+    NSString *appendString = annotation.title;
+    NSString *googleString = @"http://www.google.com/search?q=";
+    NSString *appendedUrlString = [googleString stringByAppendingString:appendString];
+    
+    if ([appendedUrlString containsString:@" "]) {
+        appendedUrlString = [appendedUrlString stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        
+        NSURL *url = [NSURL URLWithString:appendedUrlString];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        [self.classObj.googleWebView loadRequest:request];
+        
+        NSLog(@"appended string: %@", request);
+    
+    } else {
+        NSString *searchOneWord = @"http://www.google.com/search?q=";
+        appendedUrlString = [searchOneWord stringByAppendingString:appendedUrlString];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appendedUrlString]];
+        
+        NSLog(@"appended string: %@", appendedUrlString);
+    }
+}
+
 //    NSRange rangeOfString = [appendString rangeOfString:@" "];
     
 //    if (rangeOfString.location == NSNotFound) {
 //        NSString *searchOneWord = @"http://www.google.com/search?q=";
 //        appendString = [searchOneWord stringByAppendingString:searchOneWord];
 //        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appendString]];
-//    }
-    
-    
-//    if ([appendString containsString:@" "]) {
-//        appendString = [appendString stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-//        NSString *googleSearch = @"http://www.google.com/search?q=";
-//        appendString = [googleSearch stringByAppendingString:appendString];
-//        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appendString]];
-//        
-//        NSLog(@"%@", appendString);
-//    } else {
-//        NSString *searchOneWord = @"http://www.google.com/search?q=";
-//        appendString = [searchOneWord stringByAppendingString:appendString];
-//        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appendString]];
-//    }
-}
+//    }pizza
 
 -(void)detailButtonPressed:(UIButton *)sender{
     [self performSegueWithIdentifier:@"detailViewSegue" sender:nil];
