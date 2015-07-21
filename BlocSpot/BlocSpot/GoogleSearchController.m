@@ -7,6 +7,7 @@
 //
 
 #import "GoogleSearchController.h"
+#import "DataSource.h"
 
 @interface GoogleSearchController ()
 
@@ -14,14 +15,13 @@
 
 @implementation GoogleSearchController
 
-@synthesize googleWebView;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.googleWebView = [[UIWebView alloc] init];
-    self.googleWebView.delegate = self;
     // Do any additional setup after loading the view.
+    //inspect gloabal search string
+    //loadRequest of webview
+    [self.googleWebView loadRequest:[DataSource sharedInstance].searchURL];
 }
 
 - (void)didReceiveMemoryWarning {

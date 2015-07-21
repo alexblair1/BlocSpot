@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
+#import <MapKit/MapKit.h>
 
 
-@interface TableViewController : UITableViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface TableViewController : UITableViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) NSMutableArray *poiArray;
 @property (nonatomic, strong) UISearchBar *searchBarTable;

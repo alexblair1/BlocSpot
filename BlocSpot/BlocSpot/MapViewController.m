@@ -7,56 +7,19 @@
 //
 
 #import "MapViewController.h"
-#import "Search.h"
-#import "TableViewController.h"
-#import "GoogleSearchController.h"
-#import <CoreLocation/CoreLocation.h>
 
 @interface MapViewController ()
 
 @property (strong, nonatomic) IBOutlet UISearchBar *searchBarMap;
-@property (strong, nonatomic) IBOutlet MKMapView *mapView;
 @property (strong, nonatomic) UIBarButtonItem *categoryButton;
-@property (nonatomic, strong) NSString *storedItemNames;
-@property (nonatomic, strong) GoogleSearchController *classObj;
-
-@property (nonatomic, strong) MKPlacemark *placemark;
-
-
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) UISearchController *searchController;
-@property (nonatomic, strong) MKAnnotationView *annotationView;
-@property (nonatomic, strong) MKLocalSearchRequest *searchReguest;
-@property (nonatomic, strong) MKLocalSearch *search;
-@property (nonatomic, strong) MKLocalSearchResponse *searchResponse;
-@property (nonatomic, strong) NSError *error;
 @property (nonatomic, strong) MKPointAnnotation *pointAnnotation;
-@property (nonatomic, strong) MKPinAnnotationView *pinAnnotationView;
+
+@property (nonatomic, strong) NSString *savedPoiName;
 
 @end
 
 @implementation MapViewController
-
-//annotation view
-
--(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation{
-    //custom annotation view
-    MKPinAnnotationView *customPinView = [[MKPinAnnotationView alloc]
-                                          initWithAnnotation:self.pointAnnotation reuseIdentifier:@"detailViewController"];
-    customPinView.pinColor = MKPinAnnotationColorPurple;
-    customPinView.animatesDrop = YES;
-    customPinView.canShowCallout = YES;
-    
-    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-    [rightButton addTarget:self action:@selector(detailButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    customPinView.rightCalloutAccessoryView = rightButton;
-    
-    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-    [leftButton addTarget:self action:@selector(leftButtonAnnotationPressed:) forControlEvents:UIControlEventTouchUpInside];
-    customPinView.leftCalloutAccessoryView = leftButton;
-    
-    return customPinView;
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -74,8 +37,6 @@
     [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
     
-    self.classObj = [[GoogleSearchController alloc] init];
-    
     self.categoryButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Categories", @"category button") style:UIBarButtonItemStylePlain target:self action:@selector(categoryButtonPressed:)];
     self.navigationItem.rightBarButtonItems = [self.navigationItem.rightBarButtonItems arrayByAddingObject:self.categoryButton];
     
@@ -90,6 +51,27 @@
         [self.locationManager requestAlwaysAuthorization];
     }
     
+}
+
+#pragma mark - Annotation View 
+
+-(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation{
+    //custom annotation view
+    MKPinAnnotationView *customPinView = [[MKPinAnnotationView alloc]
+                                          initWithAnnotation:self.pointAnnotation reuseIdentifier:@"detailViewController"];
+    customPinView.pinColor = MKPinAnnotationColorPurple;
+    customPinView.animatesDrop = YES;
+    customPinView.canShowCallout = YES;
+    
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+    [rightButton addTarget:self action:@selector(savePoiButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    customPinView.rightCalloutAccessoryView = rightButton;
+    
+    UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    [leftButton addTarget:self action:@selector(leftAnnotationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    customPinView.leftCalloutAccessoryView = leftButton;
+    
+    return customPinView;
 }
 
 - (void) locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status{
@@ -120,45 +102,56 @@
     }];
 }
 
-#pragma mark - Buttons 
+#pragma mark - Get Map Info Method
 
--(void)leftButtonAnnotationPressed:(UIButton *)sender {
+- (void) getAnnotationInfo{
+    [DataSource sharedInstance].pointFromMapView = [self.mapView.selectedAnnotations objectAtIndex:([self.mapView.selectedAnnotations count]) -1];
+    [DataSource sharedInstance].annotationTitleFromMapView = [DataSource sharedInstance].pointFromMapView.title;
     
-    [self performSegueWithIdentifier:@"googleSearch" sender:nil];
+    [DataSource sharedInstance].latitude = [DataSource sharedInstance].pointFromMapView.coordinate.latitude;
+    [DataSource sharedInstance].longitude = [DataSource sharedInstance].pointFromMapView.coordinate.longitude;
     
-    MKPointAnnotation *annotation = [self.mapView.selectedAnnotations objectAtIndex:([self.mapView.selectedAnnotations count]) -1];
-    NSString *appendString = annotation.title;
+    NSLog(@"latitude: %f", [DataSource sharedInstance].latitude);
+    NSLog(@"longitude: %f", [DataSource sharedInstance].longitude);
+}
+
+#pragma mark - Buttons
+
+-(void)savePoiButtonPressed:(UIButton *)sender{
+    [self getAnnotationInfo];
+    
+    [[DataSource sharedInstance] saveSelectedPoiName:[DataSource sharedInstance].annotationTitleFromMapView withY:[DataSource sharedInstance].latitude withX:[DataSource sharedInstance].longitude];
+    
+    NSLog(@"savedPOI: %@", [DataSource sharedInstance].annotationTitleFromMapView);
+    
+    NSLog(@"latitude: %f", [DataSource sharedInstance].latitude);
+    NSLog(@"longitude: %f", [DataSource sharedInstance].longitude);
+    
+}
+
+- (void) leftAnnotationButtonPressed:(UIButton *)sender {
+    [self getAnnotationInfo];
+    
     NSString *googleString = @"http://www.google.com/search?q=";
-    NSString *appendedUrlString = [googleString stringByAppendingString:appendString];
+    NSString *appendedUrlString = [googleString stringByAppendingString:[DataSource sharedInstance].annotationTitleFromMapView];
     
     if ([appendedUrlString containsString:@" "]) {
         appendedUrlString = [appendedUrlString stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-        
-        NSURL *url = [NSURL URLWithString:appendedUrlString];
-        NSURLRequest *request = [NSURLRequest requestWithURL:url];
-        [self.classObj.googleWebView loadRequest:request];
-        
-        NSLog(@"appended string: %@", request);
-    
     } else {
-        NSString *searchOneWord = @"http://www.google.com/search?q=";
-        appendedUrlString = [searchOneWord stringByAppendingString:appendedUrlString];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appendedUrlString]];
-        
-        NSLog(@"appended string: %@", appendedUrlString);
+        appendedUrlString = appendedUrlString;
     }
-}
-
-//    NSRange rangeOfString = [appendString rangeOfString:@" "];
     
-//    if (rangeOfString.location == NSNotFound) {
-//        NSString *searchOneWord = @"http://www.google.com/search?q=";
-//        appendString = [searchOneWord stringByAppendingString:searchOneWord];
-//        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appendString]];
-//    }pizza
+    NSURL *url = [NSURL URLWithString:appendedUrlString];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    [DataSource sharedInstance].searchURL = request;
+    NSLog(@"appended string: %@", request);
+    NSLog(@"saved poi name: %@", appendedUrlString);
+    
+    self.savedPoiName = appendedUrlString;
+    NSLog(@"saved poi name: %@", appendedUrlString);
+    
+    [self performSegueWithIdentifier:@"googleSearch" sender:nil];
 
--(void)detailButtonPressed:(UIButton *)sender{
-    [self performSegueWithIdentifier:@"detailViewSegue" sender:nil];
 }
 
 - (void)categoryButtonPressed:(UIBarButtonItem *)sender{

@@ -11,6 +11,7 @@
 @implementation CategoryViewController
 
 -(void)viewDidLoad{
+    [super viewDidLoad];
     self.title = NSLocalizedString(@"Categories", @"category view controller title");
 }
 
