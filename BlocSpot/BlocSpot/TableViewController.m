@@ -182,29 +182,29 @@
 
 #pragma mark - TableViewCell Navigation
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     
-    self.poi = [self.fetchController objectAtIndexPath:indexPath];
-    [self performSegueWithIdentifier:@"mapViewSegue" sender:self];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"mapViewSegue"]) {
+    if ([segue.identifier isEqualToString:@"cellMapSegue"]) {
         
-        //get reference to the destination view controller.
-        //map view controller is embedded in a navigation controller. check this first.
-        MapViewController *mapVC = [segue destinationViewController];
+        //get reference to the destination view controller
         
-        double y = [self.poi.yCoordinate doubleValue];
-        double x = [self.poi.xCoordinate doubleValue];
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        self.poi = [self.fetchController objectAtIndexPath:indexPath];
+        
+        float y = [self.poi.yCoordinate floatValue];
+        float x = [self.poi.xCoordinate floatValue];
         
         CLLocationCoordinate2D addPoint;
         addPoint.latitude = y;
         addPoint.longitude = x;
+        NSLog(@"coordiante y: %f x:%f name: %@", addPoint.latitude, addPoint.longitude, self.poi.name);
         
         MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
         [pointAnnotation setCoordinate:addPoint];
+        [pointAnnotation setTitle:self.poi.name];
         
+        MapViewController *mapVC = [segue destinationViewController];
+        [mapVC view];
         [mapVC.mapView addAnnotation:pointAnnotation];
         
     }

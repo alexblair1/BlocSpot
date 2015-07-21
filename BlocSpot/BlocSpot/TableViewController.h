@@ -15,7 +15,6 @@
 
 @property (nonatomic, strong) NSMutableArray *poiArray;
 @property (nonatomic, strong) UISearchBar *searchBarTable;
-
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *mapButton;
 
 - (IBAction)searchButtonPressed:(id)sender;
