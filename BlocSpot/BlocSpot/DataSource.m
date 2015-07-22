@@ -40,9 +40,7 @@
 }
 
 #pragma mark - Map
-
 //when functional... refactor and pass in a completion block for error handling
-
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock{
     self.searchRequest = [[MKLocalSearchRequest alloc] init];
     self.searchRequest.naturalLanguageQuery = text;
@@ -63,8 +61,10 @@
         }
     }];
 }
-//
--(void) saveSelectedPoiName:(NSString *)name withY:(float)yCoordinate withX:(float)xCoordinate{
+
+#pragma mark - Persist Data Methods 
+
+-(void) saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate{
     self.pointFromMapView = [[MKPointAnnotation alloc] init];
     self.annotationTitleFromMapView = [[NSString alloc] init];
     
@@ -81,12 +81,41 @@
     [newPoi setValue:name forKey:@"name"];
     [newPoi setValue:[NSNumber numberWithFloat:yCoordinate] forKey:@"yCoordinate"];
     [newPoi setValue:[NSNumber numberWithFloat:xCoordinate] forKey:@"xCoordinate"];
+    [newPoi setValue:subtitle forKey:@"subtitle"];
     
     NSError *saveError = nil;
     
     if (![newPoi.managedObjectContext save:&saveError]) {
         NSLog(@"Unable to save managed object");
         NSLog(@"%@, %@", saveError, saveError.localizedDescription);
+    }
+}
+
+-(void) saveCategoryInfo:(NSString *)name withColors:(float)redColor withBlue:(float)blueColor withGreen:(float)greenColor{
+    
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    NSManagedObjectContext *context = [appDelegate managedObjectContext];
+    NSEntityDescription *entityCategory = [NSEntityDescription entityForName:@"Categories" inManagedObjectContext:context];
+    NSManagedObject *newCategory = [[NSManagedObject alloc] initWithEntity:entityCategory insertIntoManagedObjectContext:context];
+    
+    NSString *nameString = [[NSString alloc] init];
+    nameString = name;
+    
+    self.randomRedColor = redColor;
+    self.randomBlueColor = blueColor;
+    self.randomGreenColor = greenColor;
+    
+    [newCategory setValue:name forKey:@"name"];
+    [newCategory setValue:[NSNumber numberWithFloat:redColor] forKey:@"red"];
+    [newCategory setValue:[NSNumber numberWithFloat:blueColor] forKey:@"blue"];
+    [newCategory setValue:[NSNumber numberWithFloat:greenColor] forKey:@"green"];
+    
+    
+    NSError *error = nil;
+    
+    if (![newCategory.managedObjectContext save:&error]) {
+        NSLog(@"Unable to save managed object");
+        NSLog(@"%@, %@", error, error.localizedDescription);
     }
 }
 

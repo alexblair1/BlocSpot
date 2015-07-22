@@ -11,7 +11,6 @@
 @interface MapViewController ()
 
 @property (strong, nonatomic) IBOutlet UISearchBar *searchBarMap;
-@property (strong, nonatomic) UIBarButtonItem *categoryButton;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) MKPointAnnotation *pointAnnotation;
 
@@ -36,9 +35,6 @@
     self.mapView.showsUserLocation = YES;
     [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
-    
-    self.categoryButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Categories", @"category button") style:UIBarButtonItemStylePlain target:self action:@selector(categoryButtonPressed:)];
-    self.navigationItem.rightBarButtonItems = [self.navigationItem.rightBarButtonItems arrayByAddingObject:self.categoryButton];
     
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     NSLog(@"%d",status);
@@ -120,7 +116,7 @@
 -(void)savePoiButtonPressed:(UIButton *)sender{
     [self getAnnotationInfo];
     
-    [[DataSource sharedInstance] saveSelectedPoiName:[DataSource sharedInstance].annotationTitleFromMapView withY:[DataSource sharedInstance].latitude withX:[DataSource sharedInstance].longitude];
+    [[DataSource sharedInstance] saveSelectedPoiName:[DataSource sharedInstance].annotationTitleFromMapView withSubtitle:self.searchBarMap.text withY:[DataSource sharedInstance].latitude withX:[DataSource sharedInstance].longitude];
     
     NSLog(@"savedPOI: %@", [DataSource sharedInstance].annotationTitleFromMapView);
     

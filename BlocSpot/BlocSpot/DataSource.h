@@ -26,6 +26,9 @@
 @property (nonatomic, strong) NSString *annotationTitleFromMapView;
 @property (nonatomic) float latitude;
 @property (nonatomic) float longitude;
+@property (nonatomic) float randomRedColor;
+@property (nonatomic) float randomBlueColor;
+@property (nonatomic) float randomGreenColor;
 //core data
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 
@@ -40,5 +43,6 @@
 
 
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock;
--(void) saveSelectedPoiName:(NSString *)name withY:(float)yCoordinate withX:(float)xCoordinate;
+-(void) saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate;
+-(void) saveCategoryInfo:(NSString *)name withColors:(float)redColor withBlue:(float)blueColor withGreen:(float)greenColor;
 @end

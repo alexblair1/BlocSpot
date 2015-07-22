@@ -18,8 +18,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    //inspect gloabal search string
     //loadRequest of webview
     [self.googleWebView loadRequest:[DataSource sharedInstance].searchURL];
 }

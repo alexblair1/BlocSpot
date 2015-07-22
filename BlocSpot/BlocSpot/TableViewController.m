@@ -9,13 +9,12 @@
 #import "TableViewController.h"
 #import "MapViewController.h"
 #import "DataSource.h"
-#import "CategoryViewController.h"
 #import "POI.h"
 #import "TableViewCell.h"
 
 @interface TableViewController ()
 
-@property (nonatomic, strong) UIBarButtonItem *categoryButtonItem;
+
 @property (nonatomic, strong) UIPopoverController *buttonPopOverController;
 @property (nonatomic, strong) MKPointAnnotation *pointAnnotation;
 
@@ -23,9 +22,13 @@
 @property (nonatomic, strong) NSManagedObjectContext *context;
 @property (nonatomic, strong) POI *poi;
 
+@property BOOL isFiltered;
+
 @end
 
 @implementation TableViewController
+
+#define SectionHeaderHeight 40
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -33,20 +36,17 @@
     self.title = @"BlocSpot";
 
     self.searchBarTable = [[UISearchBar alloc] init];
+    self.searchBarTable.placeholder = NSLocalizedString(@"Search", @"search bar place holder");
     self.searchBarTable.delegate = self;
-
-    self.categoryButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Categories", @"categories button") style:UIBarButtonItemStylePlain target:self action:@selector(categoryButtonDidPress:)];
-    
-    self.navigationItem.rightBarButtonItems = [self.navigationItem.rightBarButtonItems arrayByAddingObject:self.categoryButtonItem];
     
     //fetch request core data
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     self.context = [appDelegate managedObjectContext];
     
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"POI"];
-    [request setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
+    [request setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"subtitle" ascending:YES]]];
     //initialize the fetched results controller
-    self.fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:self.context sectionNameKeyPath:nil cacheName:nil];
+    self.fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:self.context sectionNameKeyPath:@"subtitle" cacheName:nil];
     //configure fetched results controller
     [self.fetchController setDelegate:self];
     //perform fetch
@@ -96,12 +96,9 @@
 }
 
 #pragma mark - Buttons
--(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
-    
-}
 
 -(void) categoryButtonDidPress:(UIBarButtonItem *)sender {
-    [self performSegueWithIdentifier:@"categorySegueTable" sender:nil];
+    [self performSegueWithIdentifier:@"categoryButtonSegue" sender:nil];
 }
 
 - (IBAction)searchButtonPressed:(id)sender {
@@ -143,15 +140,40 @@
     TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     //configure table view cell
+//    UIButton *editButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+//    editButton.frame = CGRectMake(250.0f, 5.0f, 75.0f, 69.0f);
+//    [editButton setTitle:NSLocalizedString(@"Edit", @"Edit button to add category") forState:UIControlStateNormal];
+//    [cell addSubview:editButton];
+//    [editButton addTarget:self action:@selector(categoryButtonDidPress:) forControlEvents:UIControlEventTouchUpInside];
+    
     [self configureCell:cell atIndexPath:indexPath];
     
     return cell;
+}
+
+-(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchController sections] objectAtIndex:section];
+    return  [sectionInfo name];
+}
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    return [self.fetchController sectionIndexTitles];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
+    return [self.fetchController sectionForSectionIndexTitle:title atIndex:index];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section{
+    
 }
 
 - (void)configureCell:(TableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath{
     //Fetch Record
     NSManagedObject *record = [self.fetchController objectAtIndexPath:indexPath];
     [cell.textLabel setText:[record valueForKey:@"name"]];
+    [cell.detailTextLabel setText:[record valueForKey:@"subtitle"]];
+
 }
 
 #pragma mark - Tableview editing
@@ -178,6 +200,7 @@
             NSLog(@"%@, %@", error, error.localizedDescription);
         }
     }
+    
 }
 
 #pragma mark - TableViewCell Navigation

@@ -58,7 +58,7 @@
                     <connections>
                         <outlet property="mapButton" destination="pCF-Fn-n4n" id="u8S-p7-dEO"/>
                         <outlet property="searchDisplayController" destination="fUr-cp-LzY" id="akh-Sd-M9K"/>
-                        <segue destination="MRm-M4-GPv" kind="show" identifier="categorySegueTable" id="LdK-iv-Cdb"/>
+                        <segue destination="5oa-R6-UN2" kind="show" identifier="categoryButtonSegue" id="0NE-mO-XX0"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cFT-7D-0Vf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -72,6 +72,40 @@
                 </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="912" y="306"/>
+        </scene>
+        <!--Category Table View Controller-->
+        <scene sceneID="uR2-B6-ri7">
+            <objects>
+                <tableViewController id="5oa-R6-UN2" customClass="CategoryTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="63" sectionHeaderHeight="22" sectionFooterHeight="22" id="N88-ax-yDM">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" textLabel="MVp-vB-ktB" rowHeight="78" style="IBUITableViewCellStyleDefault" id="S3m-Ar-0RW">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="S3m-Ar-0RW" id="iMZ-7H-QCL">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MVp-vB-ktB">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="5oa-R6-UN2" id="FLI-r1-F1Z"/>
+                            <outlet property="delegate" destination="5oa-R6-UN2" id="0to-WL-2KD"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WBc-o3-SSK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="912" y="1036"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="Goc-pF-Xvc">
@@ -105,7 +139,6 @@
                         <outlet property="searchButtonMap" destination="yP7-pm-xRR" id="jvO-8w-SR9"/>
                         <outlet property="searchDisplayController" destination="H3o-EF-joN" id="JKO-cf-FxK"/>
                         <outletCollection property="mapView" destination="bsy-ob-iL5" id="MT7-Ks-S7Q"/>
-                        <segue destination="MRm-M4-GPv" kind="show" identifier="categorySegueMap" id="421-xA-vf7"/>
                         <segue destination="3Nz-oP-N48" kind="show" identifier="googleSearch" id="xDa-Xm-IXG"/>
                     </connections>
                 </viewController>
@@ -135,7 +168,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="1590" y="306"/>
+            <point key="canvasLocation" x="1588" y="306"/>
         </scene>
         <!--Google Search Controller-->
         <scene sceneID="iaY-NR-ioY">
@@ -180,31 +213,10 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YyC-SK-zwM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="170" y="306"/>
-        </scene>
-        <!--Category View Controller-->
-        <scene sceneID="eQj-iZ-hBX">
-            <objects>
-                <viewController storyboardIdentifier="CategoryViewController " useStoryboardIdentifierAsRestorationIdentifier="YES" id="MRm-M4-GPv" customClass="CategoryViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="MgC-Oo-v5F"/>
-                        <viewControllerLayoutGuide type="bottom" id="wvn-in-y2q"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="i62-Wr-yi1">
-                        <rect key="frame" x="0.0" y="0.0" width="596" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="596" height="600"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="H1K-RB-eXn" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1614" y="1007"/>
+            <point key="canvasLocation" x="226" y="306"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="cio-Lc-3Qo"/>
-        <segue reference="LdK-iv-Cdb"/>
     </inferredMetricsTieBreakers>
 </document>
