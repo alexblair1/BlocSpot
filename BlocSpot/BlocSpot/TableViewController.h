@@ -11,12 +11,10 @@
 #import <MapKit/MapKit.h>
 
 
-@interface TableViewController : UITableViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
+@interface TableViewController : UITableViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UISearchDisplayDelegate>
 
 @property (nonatomic, strong) NSMutableArray *poiArray;
-@property (nonatomic, strong) UISearchBar *searchBarTable;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *mapButton;
-
-- (IBAction)searchButtonPressed:(id)sender;
+@property (nonatomic, strong) NSMutableArray *searchResults;
 
 @end

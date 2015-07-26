@@ -49,11 +49,6 @@
                                 <segue destination="E8H-xE-bRy" kind="show" identifier="mapButtonSegue" id="lNX-wj-fPu"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="uIA-Sz-LFW">
-                            <connections>
-                                <action selector="searchButtonPressed:" destination="lr1-ht-MUy" id="XQu-8c-h4s"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="mapButton" destination="pCF-Fn-n4n" id="u8S-p7-dEO"/>

@@ -22,22 +22,27 @@
 @property (nonatomic, strong) NSManagedObjectContext *context;
 @property (nonatomic, strong) POI *poi;
 
-@property BOOL isFiltered;
+@property (nonatomic, strong) UISearchController *searchController;
 
 @end
 
 @implementation TableViewController
 
-#define SectionHeaderHeight 40
+@synthesize searchResults;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.title = @"BlocSpot";
-
-    self.searchBarTable = [[UISearchBar alloc] init];
-    self.searchBarTable.placeholder = NSLocalizedString(@"Search", @"search bar place holder");
-    self.searchBarTable.delegate = self;
+    
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchController];
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    [self.searchController.searchBar sizeToFit];
+    self.searchController.searchBar.delegate = self;
+    
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    self.definesPresentationContext = YES;
     
     //fetch request core data
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
@@ -58,6 +63,9 @@
         NSLog(@"%@, %@", fetchError, fetchError.localizedDescription);
     }
     
+    self.searchResults = [NSMutableArray arrayWithCapacity:[[self.fetchController fetchedObjects] count]];
+    [self.tableView reloadData];
+    
 //     Uncomment the following line to preserve selection between presentations.
 //     self.clearsSelectionOnViewWillAppear = NO;
 //    
@@ -65,7 +73,17 @@
 //     self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-#pragma mark - Fetched Results Controller Delegate Protocol
+-(void)viewDidUnload{
+    self.searchResults = nil;
+}
+
+#pragma mark - UISearchController Delegate
+
+-(void)updateSearchResultsForSearchController:(UISearchController *)searchController{
+
+}
+    
+#pragma mark - Fetched Results Controller Delegate
 
 -(void)controllerWillChangeContent:(NSFetchedResultsController *)controller{
     [self.tableView beginUpdates];
@@ -99,25 +117,6 @@
 
 -(void) categoryButtonDidPress:(UIBarButtonItem *)sender {
     [self performSegueWithIdentifier:@"categoryButtonSegue" sender:nil];
-}
-
-- (IBAction)searchButtonPressed:(id)sender {
-    self.navigationItem.titleView = self.searchBarTable;
-    
-    self.searchBarTable.showsCancelButton = NO;
-    
-    if (self.searchBarTable.hidden == YES) {
-        self.searchBarTable.hidden = NO;
-    }
-}
-
--(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
-    [self.searchBarTable resignFirstResponder];
-    self.searchBarTable.hidden = YES;
-}
-
--(void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar{
-    self.searchBarTable.showsCancelButton = YES;
 }
 
 #pragma mark - Table view data source
