@@ -88,6 +88,18 @@
     [self.tableView endUpdates];
 }
 
+- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id<NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
+    switch (type) {
+        case NSFetchedResultsChangeInsert:
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
+            break;
+        case NSFetchedResultsChangeDelete:
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
+        default:
+            break;
+    }
+}
+
 -(void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath{
     switch (type) {
         case NSFetchedResultsChangeInsert:{
@@ -100,18 +112,14 @@
         }
         case NSFetchedResultsChangeUpdate:{
             [self configureCell:(TableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
+            break;
         }
         case NSFetchedResultsChangeMove:{
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
         }
+            
     }
-}
-
-#pragma mark - Buttons
-
--(void) categoryButtonDidPress:(UIBarButtonItem *)sender {
-    [self performSegueWithIdentifier:@"categoryButtonSegue" sender:nil];
 }
 
 #pragma mark - Table view data source
