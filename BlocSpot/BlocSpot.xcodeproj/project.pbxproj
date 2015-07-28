@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		735774980140522052FE9CD4 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6221BFE7F7693094CFAF4F19 /* libPods.a */; };
-		FA8E74F21B5EFE6E00CE273E /* CategoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA8E74F11B5EFE6E00CE273E /* CategoryTableViewController.m */; };
-		FA8E74F51B5F3CFD00CE273E /* CategoryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA8E74F41B5F3CFD00CE273E /* CategoryTableViewCell.m */; };
-		FA8E74F81B5F5AD500CE273E /* Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = FA8E74F71B5F5AD500CE273E /* Categories.m */; };
 		FA924D071B45D3A1003EE11E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FA924D061B45D3A1003EE11E /* main.m */; };
 		FA924D0A1B45D3A1003EE11E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA924D091B45D3A1003EE11E /* AppDelegate.m */; };
 		FA924D101B45D3A1003EE11E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA924D0E1B45D3A1003EE11E /* Main.storyboard */; };
@@ -42,12 +39,6 @@
 		6221BFE7F7693094CFAF4F19 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDCDDA79F07C14C493FC29D /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		B6B7B7FB83C546F76E79F841 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		FA8E74F01B5EFE6E00CE273E /* CategoryTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoryTableViewController.h; sourceTree = "<group>"; };
-		FA8E74F11B5EFE6E00CE273E /* CategoryTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryTableViewController.m; sourceTree = "<group>"; };
-		FA8E74F31B5F3CFD00CE273E /* CategoryTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoryTableViewCell.h; sourceTree = "<group>"; };
-		FA8E74F41B5F3CFD00CE273E /* CategoryTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryTableViewCell.m; sourceTree = "<group>"; };
-		FA8E74F61B5F5AD500CE273E /* Categories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Categories.h; sourceTree = "<group>"; };
-		FA8E74F71B5F5AD500CE273E /* Categories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Categories.m; sourceTree = "<group>"; };
 		FA924D011B45D3A1003EE11E /* BlocSpot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlocSpot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA924D051B45D3A1003EE11E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA924D061B45D3A1003EE11E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -142,14 +133,8 @@
 				FAE95E8B1B56EC7200A15D52 /* CoreData.xcdatamodeld */,
 				FAE36C991B6019C800ED42C4 /* POI.h */,
 				FAE36C9A1B6019C800ED42C4 /* POI.m */,
-				FA8E74F61B5F5AD500CE273E /* Categories.h */,
-				FA8E74F71B5F5AD500CE273E /* Categories.m */,
 				FA924D081B45D3A1003EE11E /* AppDelegate.h */,
 				FA924D091B45D3A1003EE11E /* AppDelegate.m */,
-				FA8E74F01B5EFE6E00CE273E /* CategoryTableViewController.h */,
-				FA8E74F11B5EFE6E00CE273E /* CategoryTableViewController.m */,
-				FA8E74F31B5F3CFD00CE273E /* CategoryTableViewCell.h */,
-				FA8E74F41B5F3CFD00CE273E /* CategoryTableViewCell.m */,
 				FA924D381B460ADC003EE11E /* DataSource.h */,
 				FA924D391B460ADC003EE11E /* DataSource.m */,
 				FADEBCE61B544C1700D65F38 /* GoogleSearchController.h */,
@@ -246,6 +231,9 @@
 					FA924D001B45D3A1003EE11E = {
 						CreatedOnToolsVersion = 6.3.1;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Maps.iOS = {
 								enabled = 1;
 							};
@@ -335,17 +323,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA924D0A1B45D3A1003EE11E /* AppDelegate.m in Sources */,
-				FA8E74F81B5F5AD500CE273E /* Categories.m in Sources */,
 				FA924D071B45D3A1003EE11E /* main.m in Sources */,
 				FAE95E8D1B56EC7200A15D52 /* CoreData.xcdatamodeld in Sources */,
 				FAE36C9B1B6019C800ED42C4 /* POI.m in Sources */,
 				FAEC5B4B1B5DA97500041570 /* TableViewCell.m in Sources */,
 				FA924D3A1B460ADC003EE11E /* DataSource.m in Sources */,
-				FA8E74F51B5F3CFD00CE273E /* CategoryTableViewCell.m in Sources */,
 				FA924D2C1B45D4BE003EE11E /* TableViewController.m in Sources */,
 				FA924D341B45DAB0003EE11E /* MapViewController.m in Sources */,
 				FADEBCE81B544C1700D65F38 /* GoogleSearchController.m in Sources */,
-				FA8E74F21B5EFE6E00CE273E /* CategoryTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

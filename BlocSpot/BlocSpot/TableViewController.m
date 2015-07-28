@@ -34,7 +34,6 @@
     [super viewDidLoad];
     
     self.title = @"BlocSpot";
-    
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchController];
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
@@ -57,13 +56,13 @@
     //perform fetch
     NSError *fetchError = nil;
     [self.fetchController performFetch:&fetchError];
+    [self.tableView reloadData];
     
     if (fetchError) {
         NSLog(@"Unable to perform fetch");
         NSLog(@"%@, %@", fetchError, fetchError.localizedDescription);
     }
     
-    self.searchResults = [NSMutableArray arrayWithCapacity:[[self.fetchController fetchedObjects] count]];
     [self.tableView reloadData];
     
 //     Uncomment the following line to preserve selection between presentations.
@@ -71,10 +70,6 @@
 //    
 //     Uncomment the following line to display an Edit button in the navigation bar for this view controller.
 //     self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
--(void)viewDidUnload{
-    self.searchResults = nil;
 }
 
 #pragma mark - UISearchController Delegate
@@ -130,10 +125,11 @@
     if ([[self.fetchController sections] count] > 0) {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchController sections] objectAtIndex:section];
         return  [sectionInfo numberOfObjects];
-    } else{
+    } else {
         return 0;
     }
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
@@ -175,6 +171,23 @@
 
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    self.poi = [self.fetchController objectAtIndexPath:indexPath];
+    
+    float y = [self.poi.yCoordinate floatValue];
+    float x = [self.poi.xCoordinate floatValue];
+    
+    CLLocationCoordinate2D endingCoord = CLLocationCoordinate2DMake(y, x);
+    MKPlacemark *endLocation = [[MKPlacemark alloc] initWithCoordinate:endingCoord addressDictionary:nil];
+    MKMapItem *endingItem = [[MKMapItem alloc] initWithPlacemark:endLocation];
+    endingItem.name = self.poi.name;
+    
+    NSMutableDictionary *launchOptions = [[NSMutableDictionary alloc] init];
+    [launchOptions setObject:MKLaunchOptionsDirectionsModeDriving forKey:MKLaunchOptionsDirectionsModeKey];
+    
+    [endingItem openInMapsWithLaunchOptions:launchOptions];
+}
+
 #pragma mark - Tableview editing
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -204,33 +217,33 @@
 
 #pragma mark - TableViewCell Navigation
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    
-    if ([segue.identifier isEqualToString:@"cellMapSegue"]) {
-        
-        //get reference to the destination view controller
-        
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        self.poi = [self.fetchController objectAtIndexPath:indexPath];
-        
-        float y = [self.poi.yCoordinate floatValue];
-        float x = [self.poi.xCoordinate floatValue];
-        
-        CLLocationCoordinate2D addPoint;
-        addPoint.latitude = y;
-        addPoint.longitude = x;
-        NSLog(@"coordiante y: %f x:%f name: %@", addPoint.latitude, addPoint.longitude, self.poi.name);
-        
-        MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
-        [pointAnnotation setCoordinate:addPoint];
-        [pointAnnotation setTitle:self.poi.name];
-        
-        MapViewController *mapVC = [segue destinationViewController];
-        [mapVC view];
-        [mapVC.mapView addAnnotation:pointAnnotation];
-        
-    }
-}
+//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+//    
+//    if ([segue.identifier isEqualToString:@"cellMapSegue"]) {
+//    
+////      get reference to the destination view controller
+//        
+//        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+//        self.poi = [self.fetchController objectAtIndexPath:indexPath];
+//        
+//        float y = [self.poi.yCoordinate floatValue];
+//        float x = [self.poi.xCoordinate floatValue];
+//        
+//        CLLocationCoordinate2D addPoint;
+//        addPoint.latitude = y;
+//        addPoint.longitude = x;
+//        NSLog(@"coordiante y: %f x:%f name: %@", addPoint.latitude, addPoint.longitude, self.poi.name);
+//        
+//        MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
+//        [pointAnnotation setCoordinate:addPoint];
+//        [pointAnnotation setTitle:self.poi.name];
+//        
+//        MapViewController *mapVC = [segue destinationViewController];
+//        [mapVC view];
+//        [mapVC.mapView addAnnotation:pointAnnotation];
+//        
+//    }
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

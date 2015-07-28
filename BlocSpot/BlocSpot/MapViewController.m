@@ -29,8 +29,6 @@
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     
-    self.searchBarMap.delegate = self;
-    
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
     [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
@@ -150,12 +148,24 @@
 
 }
 
+//-(void)registerRegionWithCircularOverlay:(MKCircle *)overlay andIdentifier:(NSString *)identifier{
+//    CLLocationDistance radius = overlay.radius;
+//    if (radius > self.locationManager.maximumRegionMonitoringDistance) {
+//        radius = self.locationManager.maximumRegionMonitoringDistance;
+//    }
+//    
+//    //create the geographic region to be monitored.
+//    CLCircularRegion *geoRegion = [[CLCircularRegion alloc] initWithCenter:overlay.coordinate radius:radius identifier:identifier];
+//    [self.locationManager startMonitoringForRegion:geoRegion];
+//}
+
 - (void)categoryButtonPressed:(UIBarButtonItem *)sender{
     
     [self performSegueWithIdentifier:@"categorySegueMap" sender:nil];
 }
 
 - (IBAction)searchButtonDidPress:(id)sender {
+    
     self.navigationItem.titleView = self.searchBarMap;
     
     self.searchBarMap.showsCancelButton = NO;
