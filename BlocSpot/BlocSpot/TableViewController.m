@@ -25,22 +25,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self initializeSearchController];
-    [self styleTableView];
-    [self initializeTableContent];
-    [self fetchRequest];
-    
+
     self.title = @"BlocSpot";
     
-//     Uncomment the following line to preserve selection between presentations.
-//     self.clearsSelectionOnViewWillAppear = NO;
-//    
-//     Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-//     self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
--(void)fetchRequest{
-    //fetch request core data
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     self.context = [appDelegate managedObjectContext];
     
@@ -59,7 +46,17 @@
         NSLog(@"%@, %@", fetchError, fetchError.localizedDescription);
     }
     
+    [self initializeSearchController];
+    [self styleTableView];
+    [self initializeTableContent];
+    
     [self.tableView reloadData];
+    
+//     Uncomment the following line to preserve selection between presentations.
+//     self.clearsSelectionOnViewWillAppear = NO;
+//    
+//     Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+//     self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 #pragma mark - Initialization Methods for Filter Table View
@@ -111,12 +108,8 @@
     NSString *searchText = [self.searchController.searchBar text];
     
     //exit if there is no search text (i.e. user tapped on the search bar and did not enter text yet)
-    if(![searchText length] > 0) {
-        
-        return;
-    }
-    //handle when there is search text entered by the user
-    else {
+    if([searchText length] > 0) {
+    
         
         //based on the user's search, we will update the contents of the tableSections and tableSectionsAndItems properties
         [self.tableSections removeAllObjects];
@@ -135,17 +128,17 @@
         }
         //handle when user types in one or more characters in the search bar
         else if(searchText.length > 0) {
-            
+            NSLog(@"search text: %@", searchText);
             //the table section will always be based off of the first letter of the group
             NSString *upperCaseFirstSearchCharacter = [firstSearchCharacter uppercaseString];
             
             self.tableSections = [[[NSArray alloc] initWithObjects:upperCaseFirstSearchCharacter, nil] mutableCopy];
-            
-            
+            NSLog(@"table sections array: %@", self.tableSections);
             //there will only be one section (based on the first letter of the search text) - but the property requires an array for cases when there are multiple sections
             NSDictionary *namesByGroup = [POI fetchItemNamesByGroupFilteredBySearchText:searchText inManagedObjectContext:self.context];
-            
+            NSLog(@"namesByGroup: %@", namesByGroup);
             self.tableSectionsAndItems = [[[NSArray alloc] initWithObjects:namesByGroup, nil] mutableCopy];
+            NSLog(@"table sections and items: %@", self.tableSectionsAndItems);
         }
         
         //now that the tableSections and tableSectionsAndItems properties are updated, reload the UISearchController's tableview
@@ -228,7 +221,18 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+  
+//    static NSString *CellReuseId = @"ReuseCell";
+    
+    TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    
+    if(cell == nil) {
+
+        cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
+
+    }
+    
+    //TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     [self configureCell:cell atIndexPath:indexPath];
     
@@ -304,36 +308,6 @@
     
 }
 
-#pragma mark - TableViewCell Navigation
-
-//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-//    
-//    if ([segue.identifier isEqualToString:@"cellMapSegue"]) {
-//    
-////      get reference to the destination view controller
-//        
-//        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-//        self.poi = [self.fetchController objectAtIndexPath:indexPath];
-//        
-//        float y = [self.poi.yCoordinate floatValue];
-//        float x = [self.poi.xCoordinate floatValue];
-//        
-//        CLLocationCoordinate2D addPoint;
-//        addPoint.latitude = y;
-//        addPoint.longitude = x;
-//        NSLog(@"coordiante y: %f x:%f name: %@", addPoint.latitude, addPoint.longitude, self.poi.name);
-//        
-//        MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
-//        [pointAnnotation setCoordinate:addPoint];
-//        [pointAnnotation setTitle:self.poi.name];
-//        
-//        MapViewController *mapVC = [segue destinationViewController];
-//        [mapVC view];
-//        [mapVC.mapView addAnnotation:pointAnnotation];
-//        
-//    }
-//}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -366,5 +340,33 @@
     return YES;
 }
 */
+
+//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+//
+//    if ([segue.identifier isEqualToString:@"cellMapSegue"]) {
+//
+////      get reference to the destination view controller
+//
+//        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+//        self.poi = [self.fetchController objectAtIndexPath:indexPath];
+//
+//        float y = [self.poi.yCoordinate floatValue];
+//        float x = [self.poi.xCoordinate floatValue];
+//
+//        CLLocationCoordinate2D addPoint;
+//        addPoint.latitude = y;
+//        addPoint.longitude = x;
+//        NSLog(@"coordiante y: %f x:%f name: %@", addPoint.latitude, addPoint.longitude, self.poi.name);
+//
+//        MKPointAnnotation *pointAnnotation = [[MKPointAnnotation alloc] init];
+//        [pointAnnotation setCoordinate:addPoint];
+//        [pointAnnotation setTitle:self.poi.name];
+//
+//        MapViewController *mapVC = [segue destinationViewController];
+//        [mapVC view];
+//        [mapVC.mapView addAnnotation:pointAnnotation];
+//
+//    }
+//}
 
 @end

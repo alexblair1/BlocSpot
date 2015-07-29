@@ -33,16 +33,6 @@
 //core data
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 
-@property (nonatomic, strong) NSMutableArray *searchHistory;
-@property (nonatomic, strong) NSArray *poiResults;
-@property (nonatomic, strong) NSMutableArray *annotations;
-@property (nonatomic, strong) NSMutableDictionary *categories;
-@property (nonatomic, strong) NSMutableArray *favorites;
-@property (nonatomic, assign) BOOL favoritesSortedByCategory;
-@property (nonatomic, strong) NSArray *sortedResults;
-@property (nonatomic, strong) NSMutableArray *lastFavoriteLocalNotifications;
-
-
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock;
 -(void) saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate;
 -(void) saveCategoryInfo:(NSString *)name withColors:(float)redColor withBlue:(float)blueColor withGreen:(float)greenColor;
