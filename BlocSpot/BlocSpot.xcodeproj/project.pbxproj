@@ -18,6 +18,7 @@
 		FA924D2E1B45D7A4003EE11E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA924D2D1B45D7A4003EE11E /* MapKit.framework */; };
 		FA924D341B45DAB0003EE11E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA924D331B45DAB0003EE11E /* MapViewController.m */; };
 		FA924D3A1B460ADC003EE11E /* DataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = FA924D391B460ADC003EE11E /* DataSource.m */; };
+		FADE2ADD1B684D9600820E27 /* POI+CoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = FADE2ADC1B684D9600820E27 /* POI+CoreData.m */; };
 		FADEBCE81B544C1700D65F38 /* GoogleSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = FADEBCE71B544C1700D65F38 /* GoogleSearchController.m */; };
 		FAE36C9B1B6019C800ED42C4 /* POI.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE36C9A1B6019C800ED42C4 /* POI.m */; };
 		FAE95E8D1B56EC7200A15D52 /* CoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FAE95E8B1B56EC7200A15D52 /* CoreData.xcdatamodeld */; };
@@ -57,6 +58,8 @@
 		FA924D331B45DAB0003EE11E /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		FA924D381B460ADC003EE11E /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		FA924D391B460ADC003EE11E /* DataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSource.m; sourceTree = "<group>"; };
+		FADE2ADB1B684D9600820E27 /* POI+CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "POI+CoreData.h"; path = "../POI+CoreData.h"; sourceTree = "<group>"; };
+		FADE2ADC1B684D9600820E27 /* POI+CoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "POI+CoreData.m"; path = "../POI+CoreData.m"; sourceTree = "<group>"; };
 		FADEBCE61B544C1700D65F38 /* GoogleSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoogleSearchController.h; sourceTree = "<group>"; };
 		FADEBCE71B544C1700D65F38 /* GoogleSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoogleSearchController.m; sourceTree = "<group>"; };
 		FAE36C991B6019C800ED42C4 /* POI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = POI.h; sourceTree = "<group>"; };
@@ -133,6 +136,8 @@
 				FAE95E8B1B56EC7200A15D52 /* CoreData.xcdatamodeld */,
 				FAE36C991B6019C800ED42C4 /* POI.h */,
 				FAE36C9A1B6019C800ED42C4 /* POI.m */,
+				FADE2ADB1B684D9600820E27 /* POI+CoreData.h */,
+				FADE2ADC1B684D9600820E27 /* POI+CoreData.m */,
 				FA924D081B45D3A1003EE11E /* AppDelegate.h */,
 				FA924D091B45D3A1003EE11E /* AppDelegate.m */,
 				FA924D381B460ADC003EE11E /* DataSource.h */,
@@ -325,6 +330,7 @@
 				FA924D0A1B45D3A1003EE11E /* AppDelegate.m in Sources */,
 				FA924D071B45D3A1003EE11E /* main.m in Sources */,
 				FAE95E8D1B56EC7200A15D52 /* CoreData.xcdatamodeld in Sources */,
+				FADE2ADD1B684D9600820E27 /* POI+CoreData.m in Sources */,
 				FAE36C9B1B6019C800ED42C4 /* POI.m in Sources */,
 				FAEC5B4B1B5DA97500041570 /* TableViewCell.m in Sources */,
 				FA924D3A1B460ADC003EE11E /* DataSource.m in Sources */,

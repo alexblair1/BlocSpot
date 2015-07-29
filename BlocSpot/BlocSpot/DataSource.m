@@ -9,7 +9,7 @@
 #import "DataSource.h"
 #import "MapViewController.h"
 #import "TableViewController.h"
-#import "POI.h"
+
 
 
 @interface DataSource ()
@@ -20,14 +20,6 @@
 
 @implementation DataSource
 
-//initialize stored properties 
--(id)init{
-    self = [super init];
-    if (self) {
-        
-    }
-    return self;
-}
 //sharedInstance/Singleton
 + (instancetype) sharedInstance {
     static dispatch_once_t once;
@@ -42,6 +34,7 @@
 #pragma mark - Map
 //when functional... refactor and pass in a completion block for error handling
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock{
+    
     self.searchRequest = [[MKLocalSearchRequest alloc] init];
     self.searchRequest.naturalLanguageQuery = text;
     self.searchRequest.region = region;

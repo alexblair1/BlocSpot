@@ -17,4 +17,12 @@
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *mapButton;
 @property (nonatomic, strong) NSMutableArray *searchResults;
 
+@property (nonatomic, strong) MKPointAnnotation *pointAnnotation;
+
+@property (nonatomic, strong) NSFetchedResultsController *fetchController;
+@property (nonatomic, strong) NSManagedObjectContext *context;
+@property (nonatomic, strong) UISearchController *searchController;
+@property (nonatomic, strong) NSMutableArray *tableSections;
+@property (nonatomic, strong) NSMutableArray *tableSectionsAndItems;
+
 @end

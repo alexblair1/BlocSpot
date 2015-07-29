@@ -82,7 +82,8 @@
 #pragma mark - Map Search
 
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
-    [self.searchBarMap resignFirstResponder];
+    
+    [self.mapView removeAnnotation:[self.mapView.annotations lastObject]];
     
     [[DataSource sharedInstance] requestNewItemsWithText:self.searchBarMap.text withRegion:self.mapView.region completion:^{
         for (MKMapItem *items in [DataSource sharedInstance].matchingItems){

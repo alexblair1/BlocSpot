@@ -18,20 +18,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Avenir" size:16.0]} forState:UIControlStateNormal];
-    
-//    NSEntityDescription *entityPOI = [NSEntityDescription entityForName:@"POI" inManagedObjectContext:self.managedObjectContext];
-//    NSManagedObject *newPoi = [[NSManagedObject alloc] initWithEntity:entityPOI insertIntoManagedObjectContext:self.managedObjectContext];
-//    
-//    //create new POI record
-//    [newPoi setValue:@"pizza" forKey:@"name"];
-//    
-//    NSError *saveError = nil;
-//    
-//    if (![newPoi.managedObjectContext save:&saveError]) {
-//        NSLog(@"Unable to save managed object");
-//        NSLog(@"%@, %@", saveError, saveError.localizedDescription);
-//    }
+
     [self saveContext];
+    
     return YES;
 }
 

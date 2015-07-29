@@ -10,6 +10,7 @@
 #import <MapKit/MapKit.h>
 #import <CoreData/CoreData.h>
 #import "AppDelegate.h"
+#import "POI.h"
 
 @interface DataSource : NSObject 
 
@@ -45,4 +46,6 @@
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock;
 -(void) saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate;
 -(void) saveCategoryInfo:(NSString *)name withColors:(float)redColor withBlue:(float)blueColor withGreen:(float)greenColor;
+
+
 @end

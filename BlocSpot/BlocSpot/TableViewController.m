@@ -11,18 +11,11 @@
 #import "DataSource.h"
 #import "POI.h"
 #import "TableViewCell.h"
+#import "POI+CoreData.h"
 
 @interface TableViewController ()
 
-
-@property (nonatomic, strong) UIPopoverController *buttonPopOverController;
-@property (nonatomic, strong) MKPointAnnotation *pointAnnotation;
-
-@property (nonatomic, strong) NSFetchedResultsController *fetchController;
-@property (nonatomic, strong) NSManagedObjectContext *context;
 @property (nonatomic, strong) POI *poi;
-
-@property (nonatomic, strong) UISearchController *searchController;
 
 @end
 
@@ -32,17 +25,21 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self initializeSearchController];
+    [self styleTableView];
+    [self initializeTableContent];
+    [self fetchRequest];
     
     self.title = @"BlocSpot";
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchController];
-    self.searchController.searchResultsUpdater = self;
-    self.searchController.dimsBackgroundDuringPresentation = NO;
-    [self.searchController.searchBar sizeToFit];
-    self.searchController.searchBar.delegate = self;
     
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    self.definesPresentationContext = YES;
-    
+//     Uncomment the following line to preserve selection between presentations.
+//     self.clearsSelectionOnViewWillAppear = NO;
+//    
+//     Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+//     self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+-(void)fetchRequest{
     //fetch request core data
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     self.context = [appDelegate managedObjectContext];
@@ -56,7 +53,6 @@
     //perform fetch
     NSError *fetchError = nil;
     [self.fetchController performFetch:&fetchError];
-    [self.tableView reloadData];
     
     if (fetchError) {
         NSLog(@"Unable to perform fetch");
@@ -64,18 +60,110 @@
     }
     
     [self.tableView reloadData];
-    
-//     Uncomment the following line to preserve selection between presentations.
-//     self.clearsSelectionOnViewWillAppear = NO;
-//    
-//     Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-//     self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-#pragma mark - UISearchController Delegate
+#pragma mark - Initialization Methods for Filter Table View
 
--(void)updateSearchResultsForSearchController:(UISearchController *)searchController{
+- (void)initializeTableContent {
+    
+    //sections are defined here as a NSArray of string objects (i.e. letters representing each section)
+    self.tableSections = [[POI fetchDistinctItemGroupsInManagedObjectContext:self.context] mutableCopy];
+    
+    //sections and items are defined here as a NSArray of NSDictionaries whereby the key is a letter and the value is a NSArray of string opbjects of names
+    self.tableSectionsAndItems = [[POI fetchItemNamesByGroupInManagedObjectContext:self.context] mutableCopy];
+}
 
+-(void)initializeSearchController{
+    //instantiate a search controller for presenting the serach/filter results. Will be presented on top of the parent table view.
+    UITableViewController *searchResultsController = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
+    searchResultsController.tableView.dataSource = self;
+    searchResultsController.tableView.delegate = self;
+    
+    //instantiate a UISearchController - passing in the search results controller table
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
+    //this view controller can be covered by the UISearchController's view (search/filter table)
+    self.definesPresentationContext = YES;
+    
+    //define the frame for the uisearchcontrollers search bar and tint
+    [self.searchController.searchBar sizeToFit];
+    self.searchController.searchBar.tintColor = [UIColor whiteColor];
+    
+    //add the uisearch controllers search bar to the header of this table
+    self.tableView.tableHeaderView= self.searchController.searchBar;
+    
+    //this view controller will be responsible for implementing UISearchResultsDialog protocol methods - it handles what happens when the user types into the search bar
+    self.searchController.searchResultsUpdater = self;
+    
+    //this view controller will also be responsible for implementing UISearchBarDelegate protocal methods
+    self.searchController.searchBar.delegate = self;
+}
+
+-(void)styleTableView{
+    [[self tableView] setSectionIndexColor:[UIColor yellowColor]];
+    [[self tableView] setSectionIndexBackgroundColor:[UIColor lightGrayColor]];
+}
+
+#pragma mark - UISearchResultsUpdating
+
+-(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+    
+    //get search text from user input
+    NSString *searchText = [self.searchController.searchBar text];
+    
+    //exit if there is no search text (i.e. user tapped on the search bar and did not enter text yet)
+    if(![searchText length] > 0) {
+        
+        return;
+    }
+    //handle when there is search text entered by the user
+    else {
+        
+        //based on the user's search, we will update the contents of the tableSections and tableSectionsAndItems properties
+        [self.tableSections removeAllObjects];
+        
+        [self.tableSectionsAndItems removeAllObjects];
+        
+        
+        NSString *firstSearchCharacter = [searchText substringToIndex:1];
+        
+        //handle when user taps into search bear and there is no text entered yet
+        if([searchText length] == 0) {
+            
+            self.tableSections = [[POI fetchDistinctItemGroupsInManagedObjectContext:self.context] mutableCopy];
+            
+            self.tableSectionsAndItems = [[POI fetchItemNamesByGroupInManagedObjectContext:self.context] mutableCopy];
+        }
+        //handle when user types in one or more characters in the search bar
+        else if(searchText.length > 0) {
+            
+            //the table section will always be based off of the first letter of the group
+            NSString *upperCaseFirstSearchCharacter = [firstSearchCharacter uppercaseString];
+            
+            self.tableSections = [[[NSArray alloc] initWithObjects:upperCaseFirstSearchCharacter, nil] mutableCopy];
+            
+            
+            //there will only be one section (based on the first letter of the search text) - but the property requires an array for cases when there are multiple sections
+            NSDictionary *namesByGroup = [POI fetchItemNamesByGroupFilteredBySearchText:searchText inManagedObjectContext:self.context];
+            
+            self.tableSectionsAndItems = [[[NSArray alloc] initWithObjects:namesByGroup, nil] mutableCopy];
+        }
+        
+        //now that the tableSections and tableSectionsAndItems properties are updated, reload the UISearchController's tableview
+        [((UITableViewController *)self.searchController.searchResultsController).tableView reloadData];
+    }
+}
+
+#pragma mark - UISearchBarDelegate methods
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    
+    [self.tableSections removeAllObjects];
+    
+    [self.tableSectionsAndItems removeAllObjects];
+    
+    self.tableSections = [[POI fetchDistinctItemGroupsInManagedObjectContext:self.context] mutableCopy];
+    
+    self.tableSectionsAndItems = [[POI fetchItemNamesByGroupInManagedObjectContext:self.context] mutableCopy];
 }
     
 #pragma mark - Fetched Results Controller Delegate
@@ -141,13 +229,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    
-    //configure table view cell
-//    UIButton *editButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-//    editButton.frame = CGRectMake(250.0f, 5.0f, 75.0f, 69.0f);
-//    [editButton setTitle:NSLocalizedString(@"Edit", @"Edit button to add category") forState:UIControlStateNormal];
-//    [cell addSubview:editButton];
-//    [editButton addTarget:self action:@selector(categoryButtonDidPress:) forControlEvents:UIControlEventTouchUpInside];
     
     [self configureCell:cell atIndexPath:indexPath];
     
