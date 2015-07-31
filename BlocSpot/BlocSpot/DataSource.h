@@ -12,7 +12,7 @@
 #import "AppDelegate.h"
 #import "POI.h"
 
-@interface DataSource : NSObject 
+@interface DataSource : NSObject <NSFetchedResultsControllerDelegate>
 
 +(instancetype) sharedInstance;
 
@@ -32,10 +32,12 @@
 @property (nonatomic) float randomGreenColor;
 //core data
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSArray *fetchResultItems;
 
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock;
--(void) saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate;
--(void) saveCategoryInfo:(NSString *)name withColors:(float)redColor withBlue:(float)blueColor withGreen:(float)greenColor;
-
+-(void)saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate;
+-(void)saveCategoryInfo:(NSString *)name withColors:(float)redColor withBlue:(float)blueColor withGreen:(float)greenColor;
+-(void)fetchRequest;
 
 @end

@@ -14,8 +14,7 @@
 #import "AppDelegate.h"
 #import "TableViewController.h"
 #import "GoogleSearchController.h"
-
-
+#import "POI.h"
 
 @interface MapViewController : UIViewController <UIWebViewDelegate, UISearchBarDelegate, MKMapViewDelegate, CLLocationManagerDelegate>
 
@@ -24,5 +23,6 @@
 @property (strong, nonatomic) IBOutlet MKMapView *mapView;
 
 - (IBAction)searchButtonDidPress:(id)sender;
+
 
 @end

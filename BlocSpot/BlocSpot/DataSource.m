@@ -20,7 +20,6 @@
 
 @implementation DataSource
 
-//sharedInstance/Singleton
 + (instancetype) sharedInstance {
     static dispatch_once_t once;
     static id sharedInstance;
@@ -53,6 +52,30 @@
             }
         }
     }];
+}
+
+#pragma mark - General Fetch Request
+
+-(void)fetchRequest{
+    AppDelegate *appDelegate = [[UIApplication sharedApplication]delegate];
+    NSManagedObjectContext *context = [appDelegate managedObjectContext];
+    
+    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"POI"];
+    [request setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"subtitle" ascending:YES]]];
+     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:@"subtitle" cacheName:nil];
+    [self.fetchedResultsController setDelegate:self];
+    
+    NSError *error = nil;
+    [self.fetchedResultsController performFetch:&error];
+    
+    if (error) {
+        NSLog(@"unable to perform fetch");
+        NSLog(@"%@, %@", error, error.localizedDescription);
+    }
+    
+    self.fetchResultItems = [self.fetchedResultsController fetchedObjects];
+    NSLog(@"items: %@", self.fetchResultItems);
+
 }
 
 #pragma mark - Persist Data Methods 

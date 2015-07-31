@@ -13,8 +13,12 @@
 @property (strong, nonatomic) IBOutlet UISearchBar *searchBarMap;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) MKPointAnnotation *pointAnnotation;
+@property (nonatomic, strong) CLRegion *region;
+@property (nonatomic) CLLocationCoordinate2D savedCoordinatesForGeoDistanceCalc;
+@property (nonatomic) CLLocationDistance regionRadius;
 
 @property (nonatomic, strong) NSString *savedPoiName;
+@property (nonatomic, strong) POI *poi;
 
 @end
 
@@ -23,28 +27,123 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[DataSource sharedInstance]fetchRequest];
+    
     self.searchBarMap = [[UISearchBar alloc] init];
     self.searchBarMap.delegate = self;
-    
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
     
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
     [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
     
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     NSLog(@"%d",status);
     
     if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [self.locationManager requestWhenInUseAuthorization];
+        
+        CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
+        if (authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
+            authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+            self.locationManager.distanceFilter = 1;
+            [self.locationManager startUpdatingLocation];
+            
+            for (POI *items in [DataSource sharedInstance].fetchResultItems){
+                
+                NSString * poiName = items.name;
+                float poiLatitude = [items.yCoordinate floatValue];
+                float poiLongitude = [items.xCoordinate floatValue];
+                self.savedCoordinatesForGeoDistanceCalc = CLLocationCoordinate2DMake(poiLatitude, poiLatitude);
+                
+                NSString *identifier = poiName;
+                CLLocationDegrees latitude = poiLatitude;
+                CLLocationDegrees longitude = poiLongitude;
+                CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(latitude, longitude);
+                self.regionRadius = 10;
+                
+                self.region =  [[CLCircularRegion alloc] initWithCenter:centerCoordinate radius:100 identifier:identifier];
+                NSLog(@"region: %@", self.region);
+                [self.locationManager startMonitoringForRegion:self.region];
+            
+        }
     }
-    
+}
+
     if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
         [self.locationManager requestAlwaysAuthorization];
     }
+
+    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
+    localNotification.alertBody = [NSString stringWithFormat:@"You are near the %@", self.region.identifier];
+    localNotification.timeZone = [NSTimeZone defaultTimeZone];
+    [[UIApplication sharedApplication]scheduleLocalNotification:localNotification];
     
+}
+
+#pragma mark - Geofencing
+
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region
+
+{
+    NSLog(@"entered region!!");
+    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
+    localNotification.alertBody = [NSString stringWithFormat:@"You are near the %@", self.region.identifier];
+    localNotification.timeZone = [NSTimeZone defaultTimeZone];
+    [[UIApplication sharedApplication]scheduleLocalNotification:localNotification];
+}
+
+//-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
+//    [self.locationManager stopUpdatingLocation];
+//}
+
+-(void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region{
+    
+}
+
+- (CLRegion*)createGeofenceRegion{
+    
+    for (POI *items in [DataSource sharedInstance].fetchResultItems){
+    
+    NSString * poiName = items.name;
+    float poiLatitude = [items.yCoordinate floatValue];
+    float poiLongitude = [items.xCoordinate floatValue];
+    self.savedCoordinatesForGeoDistanceCalc = CLLocationCoordinate2DMake(poiLatitude, poiLatitude);
+        
+    NSString *identifier = poiName;
+    CLLocationDegrees latitude = poiLatitude;
+    CLLocationDegrees longitude = poiLongitude;
+    CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(latitude, longitude);
+    self.regionRadius = 10;
+    
+    if(self.regionRadius > self.locationManager.maximumRegionMonitoringDistance)
+    {
+        self.regionRadius = self.locationManager.maximumRegionMonitoringDistance;
+    }
+
+    self.region =  [[CLCircularRegion alloc] initWithCenter:centerCoordinate radius:10 identifier:identifier];
+        NSLog(@"region: %@", self.region);
+    }
+    return self.region;
+}
+
+- (NSNumber*)calculateDistanceInMetersBetweenCoord:(CLLocationCoordinate2D)coord1 coord:(CLLocationCoordinate2D)coord2 {
+    NSInteger nRadius = 6371; // Earth's radius in Kilometers
+    double latDiff = (coord2.latitude - coord1.latitude) * (M_PI/180);
+    double lonDiff = (coord2.longitude - coord1.longitude) * (M_PI/180);
+    double lat1InRadians = coord1.latitude * (M_PI/180);
+    double lat2InRadians = coord2.latitude * (M_PI/180);
+    double nA = pow ( sin(latDiff/2), 2 ) + cos(lat1InRadians) * cos(lat2InRadians) * pow ( sin(lonDiff/2), 2 );
+    double nC = 2 * atan2( sqrt(nA), sqrt( 1 - nA ));
+    double nD = nRadius * nC;
+    // convert to meters
+    return @(nD*1000);
 }
 
 #pragma mark - Annotation View 

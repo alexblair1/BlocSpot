@@ -16,6 +16,8 @@
 @interface TableViewController ()
 
 @property (nonatomic, strong) POI *poi;
+@property (nonatomic, strong) UITableViewController *searchResultsController;
+@property (nonatomic, strong) NSArray *fetchedResults;
 
 @end
 
@@ -33,11 +35,9 @@
     
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"POI"];
     [request setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"subtitle" ascending:YES]]];
-    //initialize the fetched results controller
     self.fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:self.context sectionNameKeyPath:@"subtitle" cacheName:nil];
-    //configure fetched results controller
     [self.fetchController setDelegate:self];
-    //perform fetch
+
     NSError *fetchError = nil;
     [self.fetchController performFetch:&fetchError];
     
@@ -72,12 +72,12 @@
 
 -(void)initializeSearchController{
     //instantiate a search controller for presenting the serach/filter results. Will be presented on top of the parent table view.
-    UITableViewController *searchResultsController = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
-    searchResultsController.tableView.dataSource = self;
-    searchResultsController.tableView.delegate = self;
+    self.searchResultsController = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.searchResultsController.tableView.dataSource = self;
+    self.searchResultsController.tableView.delegate = self;
     
     //instantiate a UISearchController - passing in the search results controller table
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
     //this view controller can be covered by the UISearchController's view (search/filter table)
     self.definesPresentationContext = YES;
     
@@ -86,13 +86,14 @@
     self.searchController.searchBar.tintColor = [UIColor whiteColor];
     
     //add the uisearch controllers search bar to the header of this table
-    self.tableView.tableHeaderView= self.searchController.searchBar;
+    self.tableView.tableHeaderView = self.searchController.searchBar;
     
     //this view controller will be responsible for implementing UISearchResultsDialog protocol methods - it handles what happens when the user types into the search bar
     self.searchController.searchResultsUpdater = self;
     
     //this view controller will also be responsible for implementing UISearchBarDelegate protocal methods
     self.searchController.searchBar.delegate = self;
+
 }
 
 -(void)styleTableView{
@@ -103,9 +104,9 @@
 #pragma mark - UISearchResultsUpdating
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-    
+
     //get search text from user input
-    NSString *searchText = [self.searchController.searchBar text];
+    NSString *searchText = self.searchController.searchBar.text;
     
     //exit if there is no search text (i.e. user tapped on the search bar and did not enter text yet)
     if([searchText length] > 0) {
@@ -139,6 +140,7 @@
             NSLog(@"namesByGroup: %@", namesByGroup);
             self.tableSectionsAndItems = [[[NSArray alloc] initWithObjects:namesByGroup, nil] mutableCopy];
             NSLog(@"table sections and items: %@", self.tableSectionsAndItems);
+            
         }
         
         //now that the tableSections and tableSectionsAndItems properties are updated, reload the UISearchController's tableview
@@ -231,7 +233,7 @@
         cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
 
     }
-    
+
     //TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     [self configureCell:cell atIndexPath:indexPath];
