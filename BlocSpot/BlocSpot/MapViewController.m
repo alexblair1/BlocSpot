@@ -26,16 +26,20 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [[DataSource sharedInstance]fetchRequest];
+    
+    //register for notifications
+    UIUserNotificationType types = UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
     
     self.searchBarMap = [[UISearchBar alloc] init];
     self.searchBarMap.delegate = self;
     
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
-    [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
-    [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+    [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:NO];
+    [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:NO];
     
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
@@ -77,31 +81,36 @@
     if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
         [self.locationManager requestAlwaysAuthorization];
     }
-
-    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
-    localNotification.alertBody = [NSString stringWithFormat:@"You are near the %@", self.region.identifier];
-    localNotification.timeZone = [NSTimeZone defaultTimeZone];
-    [[UIApplication sharedApplication]scheduleLocalNotification:localNotification];
     
 }
 
 #pragma mark - Geofencing
 
-- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region
-
-{
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region{
+    
     NSLog(@"entered region!!");
+    CLLocation *lastLocation = [manager location];
+    NSTimeInterval locationAge = -[lastLocation.timestamp timeIntervalSinceNow];
+    
+    if (lastLocation != nil && locationAge <max) {
+        <#statements#>
+    }
+    
     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
-    localNotification.alertBody = [NSString stringWithFormat:@"You are near the %@", self.region.identifier];
-    localNotification.timeZone = [NSTimeZone defaultTimeZone];
-    [[UIApplication sharedApplication]scheduleLocalNotification:localNotification];
+    
+    if (localNotification) {
+        localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
+        localNotification.alertBody = [NSString stringWithFormat:@"You are near %@", self.region.identifier];
+        localNotification.timeZone = [NSTimeZone defaultTimeZone];
+        localNotification.soundName = UILocalNotificationDefaultSoundName;
+    }
+    
+    [[UIApplication sharedApplication]presentLocalNotificationNow:localNotification];
 }
 
-//-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
-//    [self.locationManager stopUpdatingLocation];
-//}
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
+    [self.locationManager stopUpdatingLocation];
+}
 
 -(void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region{
     
@@ -220,6 +229,12 @@
     
     NSLog(@"latitude: %f", [DataSource sharedInstance].latitude);
     NSLog(@"longitude: %f", [DataSource sharedInstance].longitude);
+    
+    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:1];
+    localNotification.alertBody = [NSString stringWithFormat:@"You just saved %@ to your POI's", [DataSource sharedInstance].annotationTitleFromMapView];
+    localNotification.timeZone = [NSTimeZone defaultTimeZone];
+    [[UIApplication sharedApplication]scheduleLocalNotification:localNotification];
     
 }
 
