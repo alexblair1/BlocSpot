@@ -89,12 +89,6 @@
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region{
     
     NSLog(@"entered region!!");
-    CLLocation *lastLocation = [manager location];
-    NSTimeInterval locationAge = -[lastLocation.timestamp timeIntervalSinceNow];
-    
-    if (lastLocation != nil && locationAge <max) {
-        <#statements#>
-    }
     
     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
     
