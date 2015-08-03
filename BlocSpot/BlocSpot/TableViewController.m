@@ -16,7 +16,7 @@
 @interface TableViewController ()
 
 @property (nonatomic, strong) POI *poi;
-@property (nonatomic, strong) UITableViewController *searchResultsController;
+@property (nonatomic, strong) NSMutableArray *filteredList;
 @property (nonatomic, strong) NSArray *fetchedResults;
 
 @end
@@ -27,9 +27,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    self.title = @"BlocSpot";
     
+    [self performFetch];
+    [self initializeSearchController];
+    [self styleTableView];
+    [self initializeTableContent];
+    [self.tableView reloadData];
+    
+}
+
+-(void)performFetch{
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     self.context = [appDelegate managedObjectContext];
     
@@ -37,7 +44,7 @@
     [request setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"subtitle" ascending:YES]]];
     self.fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:self.context sectionNameKeyPath:@"subtitle" cacheName:nil];
     [self.fetchController setDelegate:self];
-
+    
     NSError *fetchError = nil;
     [self.fetchController performFetch:&fetchError];
     
@@ -46,17 +53,7 @@
         NSLog(@"%@, %@", fetchError, fetchError.localizedDescription);
     }
     
-    [self initializeSearchController];
-    [self styleTableView];
-    [self initializeTableContent];
-    
-    [self.tableView reloadData];
-    
-//     Uncomment the following line to preserve selection between presentations.
-//     self.clearsSelectionOnViewWillAppear = NO;
-//    
-//     Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-//     self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    NSLog(@"performed fetch!");
 }
 
 #pragma mark - Initialization Methods for Filter Table View
@@ -71,29 +68,19 @@
 }
 
 -(void)initializeSearchController{
-    //instantiate a search controller for presenting the serach/filter results. Will be presented on top of the parent table view.
-    self.searchResultsController = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
-    self.searchResultsController.tableView.dataSource = self;
-    self.searchResultsController.tableView.delegate = self;
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.searchBar.delegate = self;
     
-    //instantiate a UISearchController - passing in the search results controller table
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
-    //this view controller can be covered by the UISearchController's view (search/filter table)
+    
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    
     self.definesPresentationContext = YES;
-    
-    //define the frame for the uisearchcontrollers search bar and tint
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.tintColor = [UIColor whiteColor];
     
     //add the uisearch controllers search bar to the header of this table
     self.tableView.tableHeaderView = self.searchController.searchBar;
-    
-    //this view controller will be responsible for implementing UISearchResultsDialog protocol methods - it handles what happens when the user types into the search bar
-    self.searchController.searchResultsUpdater = self;
-    
-    //this view controller will also be responsible for implementing UISearchBarDelegate protocal methods
-    self.searchController.searchBar.delegate = self;
-
 }
 
 -(void)styleTableView{
@@ -104,53 +91,34 @@
 #pragma mark - UISearchResultsUpdating
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-
+    
     //get search text from user input
-    NSString *searchText = self.searchController.searchBar.text;
+    NSString *searchText = [self.searchController.searchBar text];
     
     //exit if there is no search text (i.e. user tapped on the search bar and did not enter text yet)
     if([searchText length] > 0) {
-    
-        
-        //based on the user's search, we will update the contents of the tableSections and tableSectionsAndItems properties
-        [self.tableSections removeAllObjects];
-        
-        [self.tableSectionsAndItems removeAllObjects];
-        
-        
-        NSString *firstSearchCharacter = [searchText substringToIndex:1];
-        
-        //handle when user taps into search bear and there is no text entered yet
-        if([searchText length] == 0) {
+        if(searchText.length > 0) {
             
-            self.tableSections = [[POI fetchDistinctItemGroupsInManagedObjectContext:self.context] mutableCopy];
-            
-            self.tableSectionsAndItems = [[POI fetchItemNamesByGroupInManagedObjectContext:self.context] mutableCopy];
-        }
-        //handle when user types in one or more characters in the search bar
-        else if(searchText.length > 0) {
-            NSLog(@"search text: %@", searchText);
-            //the table section will always be based off of the first letter of the group
-            NSString *upperCaseFirstSearchCharacter = [firstSearchCharacter uppercaseString];
-            
-            self.tableSections = [[[NSArray alloc] initWithObjects:upperCaseFirstSearchCharacter, nil] mutableCopy];
-            NSLog(@"table sections array: %@", self.tableSections);
-            //there will only be one section (based on the first letter of the search text) - but the property requires an array for cases when there are multiple sections
             NSDictionary *namesByGroup = [POI fetchItemNamesByGroupFilteredBySearchText:searchText inManagedObjectContext:self.context];
             NSLog(@"namesByGroup: %@", namesByGroup);
             self.tableSectionsAndItems = [[[NSArray alloc] initWithObjects:namesByGroup, nil] mutableCopy];
+            NSArray *allKeys = [namesByGroup allKeys];
+            self.filteredList = [[NSMutableArray alloc]init];
+            for (NSString *key in allKeys) {
+                // TODO: these should be POI objects, not just a string
+                [self.filteredList addObjectsFromArray:namesByGroup[key]];
+            }
             NSLog(@"table sections and items: %@", self.tableSectionsAndItems);
-            
         }
         
-        //now that the tableSections and tableSectionsAndItems properties are updated, reload the UISearchController's tableview
-        [((UITableViewController *)self.searchController.searchResultsController).tableView reloadData];
+        [self.tableView reloadData];
     }
 }
 
 #pragma mark - UISearchBarDelegate methods
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    self.searchController.active = NO;
     
     [self.tableSections removeAllObjects];
     
@@ -159,82 +127,38 @@
     self.tableSections = [[POI fetchDistinctItemGroupsInManagedObjectContext:self.context] mutableCopy];
     
     self.tableSectionsAndItems = [[POI fetchItemNamesByGroupInManagedObjectContext:self.context] mutableCopy];
-}
     
-#pragma mark - Fetched Results Controller Delegate
-
--(void)controllerWillChangeContent:(NSFetchedResultsController *)controller{
-    [self.tableView beginUpdates];
-}
-
--(void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
-    [self.tableView endUpdates];
-}
-
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id<NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
-    switch (type) {
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
-            break;
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
-        default:
-            break;
-    }
-}
-
--(void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath{
-    switch (type) {
-        case NSFetchedResultsChangeInsert:{
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-        }
-        case NSFetchedResultsChangeDelete:{
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-        }
-        case NSFetchedResultsChangeUpdate:{
-            [self configureCell:(TableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
-            break;
-        }
-        case NSFetchedResultsChangeMove:{
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-        }
-            
-    }
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return [[self.fetchController sections] count];
+    if (self.searchController.active) {
+        return 1;
+    } else {
+        return [[self.fetchController sections] count];
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // Return the number of rows in the section.
-    if ([[self.fetchController sections] count] > 0) {
+    if (self.searchController.active) {
+        return [self.filteredList count];
+    } else {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchController sections] objectAtIndex:section];
         return  [sectionInfo numberOfObjects];
-    } else {
-        return 0;
     }
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-  
-//    static NSString *CellReuseId = @"ReuseCell";
-    
     TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
     if(cell == nil) {
-
+        
         cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
-
+        
     }
-
-    //TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     [self configureCell:cell atIndexPath:indexPath];
     
@@ -242,16 +166,26 @@
 }
 
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchController sections] objectAtIndex:section];
-    return  [sectionInfo name];
+    
+    if (!self.searchController.active) {
+        id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchController sections] objectAtIndex:section];
+        return  [sectionInfo name];
+    }
+    return nil;
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return [self.fetchController sectionIndexTitles];
+    if (!self.searchController.active) {
+        return [self.fetchController sectionIndexTitles];
+    }
+    return nil;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
-    return [self.fetchController sectionForSectionIndexTitle:title atIndex:index];
+    if (!self.searchController.active) {
+        return [self.fetchController sectionForSectionIndexTitle:title atIndex:index];
+    }
+    return 0;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section{
@@ -259,28 +193,55 @@
 }
 
 - (void)configureCell:(TableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath{
-    //Fetch Record
-    NSManagedObject *record = [self.fetchController objectAtIndexPath:indexPath];
-    [cell.textLabel setText:[record valueForKey:@"name"]];
-    [cell.detailTextLabel setText:[record valueForKey:@"subtitle"]];
-
+    if (!self.searchController.active) {
+        //fetch record
+        NSManagedObject *record = [self.fetchController objectAtIndexPath:indexPath];
+        [cell.textLabel setText:[record valueForKey:@"name"]];
+        [cell.detailTextLabel setText:[record valueForKey:@"subtitle"]];
+    } else {
+        NSManagedObject *filterRecord = [self.filteredList objectAtIndex:indexPath.row];
+        [cell.textLabel setText:[filterRecord valueForKey:@"name"]];
+        NSLog(@"filtered name: %@", [filterRecord valueForKey:@"name"]);
+        //TODO: this is not a POI, it's just a string (see POI+CoreData)
+        [cell.detailTextLabel setText:[filterRecord valueForKey:@"subtitle"]];
+        NSLog(@"filtered subtitle: %@", [filterRecord valueForKey:@"subtitle"]);
+    }
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    self.poi = [self.fetchController objectAtIndexPath:indexPath];
+    if (!self.searchController.active) {
+        self.poi = [self.fetchController objectAtIndexPath: indexPath];
+        
+        float y = [self.poi.yCoordinate floatValue];
+        float x = [self.poi.xCoordinate floatValue];
+        
+        CLLocationCoordinate2D endingCoord = CLLocationCoordinate2DMake(y, x);
+        MKPlacemark *endLocation = [[MKPlacemark alloc] initWithCoordinate:endingCoord addressDictionary:nil];
+        MKMapItem *endingItem = [[MKMapItem alloc] initWithPlacemark:endLocation];
+        endingItem.name = self.poi.name;
+        
+        NSMutableDictionary *launchOptions = [[NSMutableDictionary alloc] init];
+        [launchOptions setObject:MKLaunchOptionsDirectionsModeDriving forKey:MKLaunchOptionsDirectionsModeKey];
+        
+        [endingItem openInMapsWithLaunchOptions:launchOptions];
+    } else {
+        //TODO: this is not a POI, it's just a string
+        self.poi = self.filteredList[indexPath.row];
+        
+        float y = [self.poi.yCoordinate floatValue];
+        float x = [self.poi.xCoordinate floatValue];
+        
+        CLLocationCoordinate2D endingCoord = CLLocationCoordinate2DMake(y, x);
+        MKPlacemark *endLocation = [[MKPlacemark alloc] initWithCoordinate:endingCoord addressDictionary:nil];
+        MKMapItem *endingItem = [[MKMapItem alloc] initWithPlacemark:endLocation];
+        endingItem.name = self.poi.name;
+        
+        NSMutableDictionary *launchOptions = [[NSMutableDictionary alloc] init];
+        [launchOptions setObject:MKLaunchOptionsDirectionsModeDriving forKey:MKLaunchOptionsDirectionsModeKey];
+        
+        [endingItem openInMapsWithLaunchOptions:launchOptions];
+    }
     
-    float y = [self.poi.yCoordinate floatValue];
-    float x = [self.poi.xCoordinate floatValue];
-    
-    CLLocationCoordinate2D endingCoord = CLLocationCoordinate2DMake(y, x);
-    MKPlacemark *endLocation = [[MKPlacemark alloc] initWithCoordinate:endingCoord addressDictionary:nil];
-    MKMapItem *endingItem = [[MKMapItem alloc] initWithPlacemark:endLocation];
-    endingItem.name = self.poi.name;
-    
-    NSMutableDictionary *launchOptions = [[NSMutableDictionary alloc] init];
-    [launchOptions setObject:MKLaunchOptionsDirectionsModeDriving forKey:MKLaunchOptionsDirectionsModeKey];
-    
-    [endingItem openInMapsWithLaunchOptions:launchOptions];
 }
 
 #pragma mark - Tableview editing
@@ -318,30 +279,30 @@
 
 
 /*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+ } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }
+ }
+ */
 
 /*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+ }
+ */
 
 /*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
 
 //- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
 //

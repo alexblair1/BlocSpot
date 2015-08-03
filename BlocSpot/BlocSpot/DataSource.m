@@ -30,6 +30,15 @@
     return sharedInstance;
 }
 
+-(id)init{
+    self = [super init];
+    if (self) {
+        self.locationManagerDS = [[CLLocationManager alloc] init];
+    }
+    
+    return self;
+}
+
 #pragma mark - Map
 //when functional... refactor and pass in a completion block for error handling
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock{
@@ -62,7 +71,7 @@
     
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"POI"];
     [request setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"subtitle" ascending:YES]]];
-     self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:@"subtitle" cacheName:nil];
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:@"subtitle" cacheName:nil];
     [self.fetchedResultsController setDelegate:self];
     
     NSError *error = nil;
@@ -73,12 +82,12 @@
         NSLog(@"%@, %@", error, error.localizedDescription);
     }
     
-    self.fetchResultItems = [self.fetchedResultsController fetchedObjects];
+    self.fetchResultItems = [NSMutableArray arrayWithArray:[self.fetchedResultsController fetchedObjects]];
     NSLog(@"items: %@", self.fetchResultItems);
-
+    
 }
 
-#pragma mark - Persist Data Methods 
+#pragma mark - Persist Data Methods
 
 -(void) saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate{
     self.pointFromMapView = [[MKPointAnnotation alloc] init];
@@ -86,7 +95,7 @@
     
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     NSManagedObjectContext *context = [appDelegate managedObjectContext];
-
+    
     self.annotationTitleFromMapView = name;
     self.latitude = yCoordinate;
     self.longitude = xCoordinate;

@@ -21,6 +21,7 @@
 @property (nonatomic, strong) MKLocalSearchRequest *searchRequest;
 @property (nonatomic, strong) MKLocalSearch *localSearch;
 @property (nonatomic, strong) MKPointAnnotation *pointAnnotation;
+@property (nonatomic, strong) CLLocationManager *locationManagerDS;
 //stored properties
 @property (nonatomic, strong) NSURLRequest *searchURL;
 @property (nonatomic, strong) MKPointAnnotation *pointFromMapView;
@@ -33,7 +34,7 @@
 //core data
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic, strong) NSArray *fetchResultItems;
+@property (nonatomic, strong) NSMutableArray *fetchResultItems;
 
 -(void)requestNewItemsWithText:(NSString *)text withRegion:(MKCoordinateRegion)region completion:(void (^)(void))completionBlock;
 -(void)saveSelectedPoiName:(NSString *)name withSubtitle:(NSString *)subtitle withY:(float)yCoordinate withX:(float)xCoordinate;

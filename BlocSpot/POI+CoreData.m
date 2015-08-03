@@ -89,10 +89,11 @@
     NSMutableArray *names = [[NSMutableArray alloc] initWithCapacity:items.count];
     
     for(POI *currentItem in items) {
-        
         //add the item name
-        [names addObject:currentItem.name];
+        [names addObject:currentItem];
     }
+    
+    NSLog(@"names array: %@", names);
     
     //serialize to non-mutable
     results = [NSArray arrayWithArray: names];

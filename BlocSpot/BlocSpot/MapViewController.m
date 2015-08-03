@@ -26,27 +26,27 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[DataSource sharedInstance]fetchRequest];
     
-    //register for notifications
-    UIUserNotificationType types = UIUserNotificationTypeAlert;
-    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+    [self startMonitoringRegions];
     
     self.searchBarMap = [[UISearchBar alloc] init];
     self.searchBarMap.delegate = self;
     
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
-    [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:NO];
-    [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:NO];
-    
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
+    [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
     
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-    NSLog(@"%d",status);
+    NSLog(@"status update: %d",status);
+    
+}
+
+-(void)startMonitoringRegions{
+    [[DataSource sharedInstance]fetchRequest];
     
     if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [self.locationManager requestWhenInUseAuthorization];
@@ -54,83 +54,86 @@
         CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
         if (authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
             authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
-            self.locationManager.distanceFilter = 1;
+            self.locationManager.distanceFilter = 10;
             [self.locationManager startUpdatingLocation];
             
             for (POI *items in [DataSource sharedInstance].fetchResultItems){
                 
-                NSString * poiName = items.name;
-                float poiLatitude = [items.yCoordinate floatValue];
-                float poiLongitude = [items.xCoordinate floatValue];
-                self.savedCoordinatesForGeoDistanceCalc = CLLocationCoordinate2DMake(poiLatitude, poiLatitude);
+                NSString *poiName = items.name;
+                NSNumber *poiLatitude = items.yCoordinate;
+                NSLog(@"value: %@", poiLatitude);
+                NSNumber *poiLongitude = items.xCoordinate;
+                NSLog(@"value: %@", poiLongitude);
                 
                 NSString *identifier = poiName;
-                CLLocationDegrees latitude = poiLatitude;
-                CLLocationDegrees longitude = poiLongitude;
+                CLLocationDegrees latitude = [poiLatitude floatValue];
+                CLLocationDegrees longitude = [poiLongitude floatValue];
                 CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(latitude, longitude);
                 self.regionRadius = 10;
                 
-                self.region =  [[CLCircularRegion alloc] initWithCenter:centerCoordinate radius:100 identifier:identifier];
-                NSLog(@"region: %@", self.region);
+                self.region =  [[CLCircularRegion alloc] initWithCenter:centerCoordinate radius:400 identifier:identifier];
                 [self.locationManager startMonitoringForRegion:self.region];
-            
+                
+                
+                NSLog(@"region: %@", self.region);
+                NSLog(@"monitored regions %@", self.locationManager.monitoredRegions);
+                
+            }
         }
     }
 }
 
-    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        [self.locationManager requestAlwaysAuthorization];
-    }
-    
-}
-
 #pragma mark - Geofencing
 
+- (void) locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
+{
+    NSLog(@"did start monitoring region!");
+    NSLog(@"monitored regions from test: %@", self.region);
+}
+
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region{
-    
     NSLog(@"entered region!!");
-    
     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
     
     if (localNotification) {
-        localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
+        localNotification.fireDate = nil;
         localNotification.alertBody = [NSString stringWithFormat:@"You are near %@", self.region.identifier];
+        localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:10];
         localNotification.timeZone = [NSTimeZone defaultTimeZone];
-        localNotification.soundName = UILocalNotificationDefaultSoundName;
     }
-    
-    [[UIApplication sharedApplication]presentLocalNotificationNow:localNotification];
+    [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+    //    [[UIApplication sharedApplication]presentLocalNotificationNow:localNotification];
 }
 
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
-    [self.locationManager stopUpdatingLocation];
+    
 }
 
 -(void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region{
-    
+    NSLog(@"just left region!");
 }
 
 - (CLRegion*)createGeofenceRegion{
     
     for (POI *items in [DataSource sharedInstance].fetchResultItems){
-    
-    NSString * poiName = items.name;
-    float poiLatitude = [items.yCoordinate floatValue];
-    float poiLongitude = [items.xCoordinate floatValue];
-    self.savedCoordinatesForGeoDistanceCalc = CLLocationCoordinate2DMake(poiLatitude, poiLatitude);
         
-    NSString *identifier = poiName;
-    CLLocationDegrees latitude = poiLatitude;
-    CLLocationDegrees longitude = poiLongitude;
-    CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(latitude, longitude);
-    self.regionRadius = 10;
-    
-    if(self.regionRadius > self.locationManager.maximumRegionMonitoringDistance)
-    {
-        self.regionRadius = self.locationManager.maximumRegionMonitoringDistance;
-    }
-
-    self.region =  [[CLCircularRegion alloc] initWithCenter:centerCoordinate radius:10 identifier:identifier];
+        NSString * poiName = items.name;
+        float poiLatitude = [items.yCoordinate floatValue];
+        float poiLongitude = [items.xCoordinate floatValue];
+        self.savedCoordinatesForGeoDistanceCalc = CLLocationCoordinate2DMake(poiLatitude, poiLatitude);
+        
+        NSString *identifier = poiName;
+        CLLocationDegrees latitude = poiLatitude;
+        CLLocationDegrees longitude = poiLongitude;
+        CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(latitude, longitude);
+        self.regionRadius = 10;
+        
+        if(self.regionRadius > self.locationManager.maximumRegionMonitoringDistance)
+        {
+            self.regionRadius = self.locationManager.maximumRegionMonitoringDistance;
+        }
+        
+        self.region =  [[CLCircularRegion alloc] initWithCenter:centerCoordinate radius:10 identifier:identifier];
         NSLog(@"region: %@", self.region);
     }
     return self.region;
@@ -149,13 +152,18 @@
     return @(nD*1000);
 }
 
-#pragma mark - Annotation View 
+#pragma mark - Annotation View
 
 -(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation{
     //custom annotation view
+    
+    if (annotation == mapView.userLocation) {
+        return nil;
+    }
+    
     MKPinAnnotationView *customPinView = [[MKPinAnnotationView alloc]
                                           initWithAnnotation:self.pointAnnotation reuseIdentifier:@"detailViewController"];
-    customPinView.pinColor = MKPinAnnotationColorPurple;
+    customPinView.pinColor = MKPinAnnotationColorRed;
     customPinView.animatesDrop = YES;
     customPinView.canShowCallout = YES;
     
@@ -254,19 +262,8 @@
     NSLog(@"saved poi name: %@", appendedUrlString);
     
     [self performSegueWithIdentifier:@"googleSearch" sender:nil];
-
+    
 }
-
-//-(void)registerRegionWithCircularOverlay:(MKCircle *)overlay andIdentifier:(NSString *)identifier{
-//    CLLocationDistance radius = overlay.radius;
-//    if (radius > self.locationManager.maximumRegionMonitoringDistance) {
-//        radius = self.locationManager.maximumRegionMonitoringDistance;
-//    }
-//    
-//    //create the geographic region to be monitored.
-//    CLCircularRegion *geoRegion = [[CLCircularRegion alloc] initWithCenter:overlay.coordinate radius:radius identifier:identifier];
-//    [self.locationManager startMonitoringForRegion:geoRegion];
-//}
 
 - (void)categoryButtonPressed:(UIBarButtonItem *)sender{
     
@@ -301,14 +298,14 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 
 @end

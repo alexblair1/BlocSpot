@@ -17,6 +17,27 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    NSLog(@"didFinishLaunch");
+    
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    NSLog(@"%d",status);
+    
+    UIUserNotificationType types = UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    
+    if ([[DataSource sharedInstance].locationManagerDS respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [[DataSource sharedInstance].locationManagerDS requestAlwaysAuthorization];
+        NSLog(@"hello from request always");
+    }
+    
+    if ([[DataSource sharedInstance].locationManagerDS respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [[DataSource sharedInstance].locationManagerDS requestWhenInUseAuthorization];
+        NSLog(@"hello from request when in use");
+    }
+    
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Avenir" size:16.0]} forState:UIControlStateNormal];
+    
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Avenir" size:16.0]} forState:UIControlStateNormal];
 
     [self saveContext];

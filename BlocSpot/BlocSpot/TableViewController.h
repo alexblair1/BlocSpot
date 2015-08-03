@@ -11,7 +11,7 @@
 #import <MapKit/MapKit.h>
 
 
-@interface TableViewController : UITableViewController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UISearchControllerDelegate, UISearchResultsUpdating, UISearchDisplayDelegate>
+@interface TableViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchResultsUpdating>
 
 @property (nonatomic, strong) NSMutableArray *poiArray;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *mapButton;

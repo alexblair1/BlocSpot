@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WFc-45-xgo">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WFc-45-xgo">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <scenes>
         <!--Table View Controller-->
@@ -111,11 +111,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bsy-ob-iL5">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bsy-ob-iL5">
                                 <rect key="frame" x="0.0" y="59" width="600" height="541"/>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="bsy-ob-iL5" firstAttribute="top" secondItem="ZSh-4G-zr3" secondAttribute="top" constant="59" id="3wh-50-MuB"/>
+                            <constraint firstAttribute="trailing" secondItem="bsy-ob-iL5" secondAttribute="trailing" id="GDY-1H-F3H"/>
+                            <constraint firstItem="bsy-ob-iL5" firstAttribute="leading" secondItem="ZSh-4G-zr3" secondAttribute="leading" id="Koi-Io-UMJ"/>
+                            <constraint firstAttribute="bottom" secondItem="bsy-ob-iL5" secondAttribute="bottom" id="nSm-Pd-qnv"/>
+                        </constraints>
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="XWC-it-ELs">
@@ -174,12 +180,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <webView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mfR-hA-tj8">
+                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mfR-hA-tj8">
                                 <rect key="frame" x="0.0" y="64" width="600" height="492"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </webView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="mfR-hA-tj8" firstAttribute="top" secondItem="JE1-Vx-1Qm" secondAttribute="top" constant="64" id="0wr-RY-IGf"/>
+                            <constraint firstAttribute="trailing" secondItem="mfR-hA-tj8" secondAttribute="trailing" id="QRE-R1-nDq"/>
+                            <constraint firstAttribute="bottom" secondItem="mfR-hA-tj8" secondAttribute="bottom" constant="44" id="Zkx-dD-kdp"/>
+                            <constraint firstItem="mfR-hA-tj8" firstAttribute="leading" secondItem="JE1-Vx-1Qm" secondAttribute="leading" id="vRk-VV-Jvg"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="googleWebView" destination="mfR-hA-tj8" id="EWb-DQ-r4o"/>
