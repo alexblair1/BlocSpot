@@ -34,6 +34,7 @@
     
     self.searchBarMap = [[UISearchBar alloc] init];
     self.searchBarMap.delegate = self;
+    self.searchBarMap.autocorrectionType = UITextAutocorrectionTypeYes;
     
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
@@ -233,10 +234,11 @@
     NSLog(@"longitude: %f", [DataSource sharedInstance].longitude);
     
     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:1];
+//    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:1];
     localNotification.alertBody = [NSString stringWithFormat:@"You just saved %@ to your POI's", [DataSource sharedInstance].annotationTitleFromMapView];
     localNotification.timeZone = [NSTimeZone defaultTimeZone];
-    [[UIApplication sharedApplication]scheduleLocalNotification:localNotification];
+//    [[UIApplication sharedApplication]scheduleLocalNotification:localNotification];
+    [[UIApplication sharedApplication]presentLocalNotificationNow:localNotification];
     
 }
 

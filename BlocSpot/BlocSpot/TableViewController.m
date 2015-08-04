@@ -26,6 +26,7 @@
 @synthesize searchResults;
 
 - (void)viewDidLoad {
+    [self performFetch];
     [super viewDidLoad];
     
     [self performFetch];
@@ -54,6 +55,7 @@
     }
     
     NSLog(@"performed fetch!");
+    
 }
 
 #pragma mark - Initialization Methods for Filter Table View
@@ -121,14 +123,90 @@
     self.searchController.active = NO;
     
     [self.tableSections removeAllObjects];
-    
     [self.tableSectionsAndItems removeAllObjects];
-    
     self.tableSections = [[POI fetchDistinctItemGroupsInManagedObjectContext:self.context] mutableCopy];
-    
     self.tableSectionsAndItems = [[POI fetchItemNamesByGroupInManagedObjectContext:self.context] mutableCopy];
-    
     [self.tableView reloadData];
+}
+
+#pragma mark - Fetched Results Controller Delegate
+
+-(void)controllerWillChangeContent:(NSFetchedResultsController *)controller{
+    [self.tableView beginUpdates];
+}
+
+-(void)controllerDidChangeContent:(NSFetchedResultsController *)controller{
+    [self.tableView endUpdates];
+}
+
+- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id<NSFetchedResultsSectionInfo>)sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
+    if (!self.searchController.active) {
+    switch (type) {
+        case NSFetchedResultsChangeInsert:
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
+            break;
+        case NSFetchedResultsChangeDelete:
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
+        default:
+            break;
+        }
+    }
+    
+    if (self.searchController.active) {
+        switch (type) {
+            case NSFetchedResultsChangeInsert:
+                [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            case NSFetchedResultsChangeDelete:
+                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationAutomatic];
+            default:
+                break;
+        }
+    }
+}
+
+-(void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath{
+    if (!self.searchController.active) {
+    switch (type) {
+        case NSFetchedResultsChangeInsert:{
+            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+        }
+        case NSFetchedResultsChangeDelete:{
+            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+        }
+        case NSFetchedResultsChangeUpdate:{
+            [self configureCell:(TableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
+            break;
+        }
+        case NSFetchedResultsChangeMove:{
+            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }
+      }
+    }
+    
+    if (self.searchController.active) {
+        switch (type) {
+            case NSFetchedResultsChangeInsert:{
+                [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+                break;
+            }
+            case NSFetchedResultsChangeDelete:{
+                [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                break;
+            }
+            case NSFetchedResultsChangeUpdate:{
+                [self configureCell:(TableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
+                break;
+            }
+            case NSFetchedResultsChangeMove:{
+                [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            }
+        }
+    }
 }
 
 #pragma mark - Table view data source
@@ -196,13 +274,15 @@
     if (!self.searchController.active) {
         //fetch record
         NSManagedObject *record = [self.fetchController objectAtIndexPath:indexPath];
+        
         [cell.textLabel setText:[record valueForKey:@"name"]];
         [cell.detailTextLabel setText:[record valueForKey:@"subtitle"]];
     } else {
         NSManagedObject *filterRecord = [self.filteredList objectAtIndex:indexPath.row];
+        
         [cell.textLabel setText:[filterRecord valueForKey:@"name"]];
         NSLog(@"filtered name: %@", [filterRecord valueForKey:@"name"]);
-        //TODO: this is not a POI, it's just a string (see POI+CoreData)
+
         [cell.detailTextLabel setText:[filterRecord valueForKey:@"subtitle"]];
         NSLog(@"filtered subtitle: %@", [filterRecord valueForKey:@"subtitle"]);
     }
@@ -247,16 +327,22 @@
 #pragma mark - Tableview editing
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
-    return YES;
+    if (!self.searchController.active){
+        return YES;
+    }else {
+        return NO;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (!self.searchController.active)
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         NSManagedObject *record = [self.fetchController objectAtIndexPath:indexPath];
         
         if (record) {
             [self.context deleteObject:record];
+            NSLog(@"context: %@", record);
         }
     }
     
@@ -269,6 +355,24 @@
         }
     }
     
+    if (self.searchController.active)
+        if (editingStyle == UITableViewCellEditingStyleDelete) {
+            NSManagedObject *record = [self.fetchController objectAtIndexPath:indexPath];
+            
+            if (record) {
+                [self.context deleteObject:record];
+                NSLog(@"context: %@", record);
+            }
+        }
+    
+    NSError *error2 = nil;
+    
+    if (![self.context save:&error2]) {
+        if (error) {
+            NSLog(@"Unable to save changes.");
+            NSLog(@"%@, %@", error2, error2.localizedDescription);
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning {
